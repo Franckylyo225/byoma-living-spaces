@@ -227,6 +227,15 @@
     }
   }
 
+  @keyframes slow-zoom {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.1);
+    }
+  }
+
   .animate-fade-in-up {
     animation: fade-in-up 0.8s ease-out forwards;
   }
@@ -247,6 +256,10 @@
     animation: shimmer 2s linear infinite;
     background: linear-gradient(90deg, transparent 0%, hsl(var(--accent) / 0.1) 50%, transparent 100%);
     background-size: 200% 100%;
+  }
+
+  .animate-slow-zoom {
+    animation: slow-zoom 8s ease-out forwards;
   }
 
   /* Animation delays */
