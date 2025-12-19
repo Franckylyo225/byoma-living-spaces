@@ -1,19 +1,46 @@
 import { Button } from "@/components/ui/button";
-import heroImage from "@/assets/hero-residence.jpg";
 import { ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+
+import heroSlide1 from "@/assets/hero-slide-1.jpg";
+import heroSlide2 from "@/assets/hero-slide-2.jpg";
+import heroSlide3 from "@/assets/hero-slide-3.jpg";
+
+const slides = [heroSlide1, heroSlide2, heroSlide3];
 
 const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="BYOMA Résidence de luxe"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 hero-overlay" />
-      </div>
+      {/* Background Images with Crossfade */}
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-[2000ms] ease-in-out ${
+            index === currentSlide ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <img
+            src={slide}
+            alt={`BYOMA Résidence ${index + 1}`}
+            className="w-full h-full object-cover scale-105 animate-slow-zoom"
+            style={{
+              animationDelay: `${index * 5}s`,
+            }}
+          />
+        </div>
+      ))}
+      
+      {/* Overlay */}
+      <div className="absolute inset-0 hero-overlay" />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
@@ -46,6 +73,22 @@ const Hero = () => {
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Slide Indicators */}
+      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 flex gap-3">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentSlide(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-500 ${
+              index === currentSlide 
+                ? "bg-primary-foreground w-8" 
+                : "bg-primary-foreground/40 hover:bg-primary-foreground/60"
+            }`}
+            aria-label={`Slide ${index + 1}`}
+          />
+        ))}
       </div>
 
       {/* Scroll Indicator */}
