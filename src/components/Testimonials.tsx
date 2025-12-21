@@ -1,4 +1,5 @@
 import { Star } from "lucide-react";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const testimonials = [
   {
@@ -50,15 +51,20 @@ const StarRating = ({ rating }: { rating: number }) => {
 };
 
 const Testimonials = () => {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
+
   return (
-    <section className="py-24 md:py-32 bg-cream relative overflow-hidden">
+    <section 
+      ref={ref as React.RefObject<HTMLElement>}
+      className="py-24 md:py-32 bg-cream relative overflow-hidden"
+    >
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       
       <div className="container mx-auto px-6 md:px-12">
         {/* Section Header */}
-        <div className="text-center mb-16 md:mb-20">
+        <div className={`text-center mb-16 md:mb-20 ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
           <span className="inline-block text-gold font-medium tracking-[0.3em] uppercase text-sm mb-4">
             Témoignages
           </span>
@@ -77,8 +83,10 @@ const Testimonials = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial.id}
-              className="bg-background p-8 md:p-10 rounded-sm border border-gold/10 hover:border-gold/30 transition-all duration-500 group relative"
-              style={{ animationDelay: `${index * 100}ms` }}
+              className={`bg-background p-8 md:p-10 rounded-sm border border-gold/10 hover:border-gold/30 transition-all duration-500 group relative ${
+                isVisible ? "animate-fade-in-up" : "opacity-0"
+              }`}
+              style={{ animationDelay: `${(index + 1) * 150}ms` }}
             >
               {/* Quote mark */}
               <div className="absolute top-6 right-8 text-6xl font-display text-gold/10 leading-none">
@@ -114,7 +122,7 @@ const Testimonials = () => {
         </div>
 
         {/* Overall Rating Summary */}
-        <div className="mt-16 md:mt-20 text-center">
+        <div className={`mt-16 md:mt-20 text-center ${isVisible ? "animate-fade-in-up" : "opacity-0"}`} style={{ animationDelay: "600ms" }}>
           <div className="inline-flex flex-col items-center bg-charcoal/5 px-12 py-8 rounded-sm">
             <div className="flex gap-2 mb-3">
               {[...Array(5)].map((_, index) => (
