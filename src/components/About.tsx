@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import aboutImage from "@/assets/about-image.jpg";
 
 const About = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -46,7 +47,8 @@ const About = () => {
       className="py-24 md:py-32 bg-background"
     >
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        {/* Top Section: Text Left, Image Right */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-16 lg:mb-24">
           {/* Left Content */}
           <div className={`${isVisible ? "animate-slide-in-left" : "opacity-0"}`}>
             <div className="accent-line mb-8" />
@@ -71,32 +73,40 @@ const About = () => {
             </p>
           </div>
 
-          {/* Right - Values */}
-          <div className="space-y-8">
-            {values.map((value, index) => (
-              <div
-                key={value.number}
-                className={`group p-8 border border-border rounded-sm hover:border-accent transition-all duration-500 card-elegant ${
-                  isVisible ? "animate-fade-in-up" : "opacity-0"
-                }`}
-                style={{ animationDelay: `${(index + 1) * 150}ms` }}
-              >
-                <div className="flex items-start gap-6">
-                  <span className="font-display text-4xl text-accent/30 group-hover:text-accent transition-colors">
-                    {value.number}
-                  </span>
-                  <div>
-                    <h3 className="font-display text-2xl text-foreground mb-3">
-                      {value.title}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {value.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Right Image */}
+          <div className={`${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
+            <div className="relative overflow-hidden rounded-sm">
+              <img
+                src={aboutImage}
+                alt="Expérience BYOMA - Confort et élégance"
+                className="w-full h-[500px] lg:h-[600px] object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent" />
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Section: 3 Value Cards */}
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          {values.map((value, index) => (
+            <div
+              key={value.number}
+              className={`group p-8 border border-border rounded-sm hover:border-accent transition-all duration-500 card-elegant text-center ${
+                isVisible ? "animate-fade-in-up" : "opacity-0"
+              }`}
+              style={{ animationDelay: `${(index + 1) * 150 + 300}ms` }}
+            >
+              <span className="font-display text-5xl text-accent/30 group-hover:text-accent transition-colors block mb-4">
+                {value.number}
+              </span>
+              <h3 className="font-display text-2xl text-foreground mb-4">
+                {value.title}
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {value.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
