@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Crown, Sparkles, Handshake } from "lucide-react";
 import aboutImage from "@/assets/about-image.jpg";
 
 const About = () => {
@@ -24,17 +25,17 @@ const About = () => {
 
   const values = [
     {
-      number: "01",
+      icon: Crown,
       title: "Excellence",
       description: "Un engagement sans compromis pour la qualité et le raffinement dans chaque détail.",
     },
     {
-      number: "02",
+      icon: Sparkles,
       title: "Innovation",
       description: "Des solutions modernes et intelligentes pour un confort optimal.",
     },
     {
-      number: "03",
+      icon: Handshake,
       title: "Authenticité",
       description: "Une expérience chaleureuse et personnalisée, loin des standards impersonnels.",
     },
@@ -88,25 +89,26 @@ const About = () => {
 
         {/* Bottom Section: 3 Value Cards */}
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {values.map((value, index) => (
-            <div
-              key={value.number}
-              className={`group p-8 border border-border rounded-sm hover:border-accent transition-all duration-500 card-elegant text-center ${
-                isVisible ? "animate-fade-in-up" : "opacity-0"
-              }`}
-              style={{ animationDelay: `${(index + 1) * 150 + 300}ms` }}
-            >
-              <span className="font-display text-5xl text-accent/30 group-hover:text-accent transition-colors block mb-4">
-                {value.number}
-              </span>
-              <h3 className="font-display text-2xl text-foreground mb-4">
-                {value.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {value.description}
-              </p>
-            </div>
-          ))}
+          {values.map((value, index) => {
+            const Icon = value.icon;
+            return (
+              <div
+                key={value.title}
+                className={`group p-8 border border-border rounded-sm hover:border-accent transition-all duration-500 card-elegant text-center ${
+                  isVisible ? "animate-fade-in-up" : "opacity-0"
+                }`}
+                style={{ animationDelay: `${(index + 1) * 150 + 300}ms` }}
+              >
+                <Icon className="w-12 h-12 text-accent/50 group-hover:text-accent transition-colors mx-auto mb-6" />
+                <h3 className="font-display text-2xl text-foreground mb-4">
+                  {value.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {value.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
