@@ -1,4 +1,5 @@
 import { Instagram, Facebook, Linkedin } from "lucide-react";
+import logoByoma from "@/assets/logo-byoma.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -36,9 +37,11 @@ const Footer = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <h2 className="font-display text-3xl tracking-luxury mb-6">
-              BYOMA
-            </h2>
+            <img 
+              src={logoByoma} 
+              alt="BYOMA Résidence" 
+              className="h-16 md:h-20 w-auto mb-6"
+            />
             <p className="text-primary-foreground/60 leading-relaxed max-w-sm mb-8">
               Résidences hôtelières d'exception. Redéfinir l'art de 
               séjourner avec élégance, confort et innovation.
