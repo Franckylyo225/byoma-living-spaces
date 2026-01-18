@@ -5,21 +5,22 @@ import residenceSuite from "@/assets/residence-suite.jpg";
 const Experience = () => {
   const { ref, isVisible } = useScrollReveal({ threshold: 0.1 });
 
-  const stats = [
+  const features = [
     {
-      label: "Résidences Premium",
-      number: "15",
-      description: "appartements de standing",
+      label: "Service Premium",
+      description: "Conciergerie personnalisée disponible pour répondre à toutes vos demandes.",
     },
     {
-      label: "Clients Satisfaits",
-      number: "2500",
-      description: "voyageurs heureux",
+      label: "Sécurité Totale",
+      description: "Résidences sécurisées avec système de surveillance et accès contrôlé.",
     },
     {
-      label: "Services Inclus",
-      number: "25",
-      description: "prestations personnalisées",
+      label: "Suites & Chambres VIP",
+      description: "Hébergements d'exception avec équipements haut de gamme.",
+    },
+    {
+      label: "Mobilité Facilitée",
+      description: "Services de navette pour vos déplacements en toute sérénité.",
     },
   ];
 
@@ -66,73 +67,26 @@ const Experience = () => {
             />
           </div>
 
-          {/* Right - Stats Grid */}
+          {/* Right - Features Grid */}
           <div className="grid grid-cols-2 gap-6">
-            {/* Stat Card 1 */}
-            <div className="bg-cream p-6 md:p-8 rounded-sm flex flex-col justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                  {stats[0].label}
-                </p>
-                <div className="h-px w-full bg-gold/30 mb-auto" />
+            {features.map((feature, index) => (
+              <div
+                key={feature.label}
+                className="bg-cream p-6 md:p-8 rounded-sm flex flex-col justify-between"
+              >
+                <div>
+                  <p className="text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-foreground mb-2">
+                    {feature.label}
+                  </p>
+                  <div className="h-px w-full bg-gold/30" />
+                </div>
+                <div className="mt-auto pt-6">
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               </div>
-              <div className="mt-auto pt-8">
-                <p className="font-display text-5xl md:text-6xl lg:text-7xl text-foreground">
-                  {stats[0].number}
-                  <span className="text-gold">+</span>
-                </p>
-                <p className="text-muted-foreground text-sm mt-2">
-                  {stats[0].description}
-                </p>
-              </div>
-            </div>
-
-            {/* Stat Card 2 */}
-            <div className="bg-cream p-6 md:p-8 rounded-sm flex flex-col justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                  {stats[1].label}
-                </p>
-                <div className="h-px w-full bg-gold/30 mb-auto" />
-              </div>
-              <div className="mt-auto pt-8">
-                <p className="font-display text-5xl md:text-6xl lg:text-7xl text-foreground">
-                  {stats[1].number}
-                  <span className="text-gold">+</span>
-                </p>
-                <p className="text-muted-foreground text-sm mt-2">
-                  {stats[1].description}
-                </p>
-              </div>
-            </div>
-
-            {/* Stat Card 3 */}
-            <div className="bg-cream p-6 md:p-8 rounded-sm flex flex-col justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-muted-foreground mb-2">
-                  {stats[2].label}
-                </p>
-                <div className="h-px w-full bg-gold/30 mb-auto" />
-              </div>
-              <div className="mt-auto pt-8">
-                <p className="font-display text-5xl md:text-6xl lg:text-7xl text-foreground">
-                  {stats[2].number}
-                  <span className="text-gold">+</span>
-                </p>
-                <p className="text-muted-foreground text-sm mt-2">
-                  {stats[2].description}
-                </p>
-              </div>
-            </div>
-
-            {/* Image Card */}
-            <div className="relative rounded-sm overflow-hidden">
-              <img
-                src={residenceSuite}
-                alt="Suite BYOMA"
-                className="w-full h-full object-cover"
-              />
-            </div>
+            ))}
           </div>
         </div>
       </div>
