@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
-import heroResidence from "@/assets/hero-residence.jpg";
+import testimonialsBg from "@/assets/testimonials-bg.jpg";
 
 const testimonials = [
   {
@@ -48,14 +48,14 @@ const Testimonials = () => {
       ref={ref as React.RefObject<HTMLElement>}
       className="relative h-[500px] md:h-[450px] overflow-hidden"
     >
-      {/* Background Image */}
+      {/* Background Image with Blur */}
       <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${heroResidence})` }}
+        className="absolute inset-0 bg-cover bg-center scale-105 blur-sm"
+        style={{ backgroundImage: `url(${testimonialsBg})` }}
       />
       
       {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-charcoal/70" />
+      <div className="absolute inset-0 bg-charcoal/75" />
       
       {/* Content */}
       <div className="relative z-10 h-full container mx-auto px-6 md:px-12 flex items-center">
