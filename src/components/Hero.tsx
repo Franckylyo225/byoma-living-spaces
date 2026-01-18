@@ -89,7 +89,7 @@ const Hero = () => {
           {/* Reservation Form */}
           <form 
             onSubmit={handleSubmit}
-            className="animate-hidden animate-fade-in-up delay-400 bg-background/98 backdrop-blur-md rounded-sm shadow-2xl max-w-4xl mx-auto overflow-hidden"
+            className="animate-hidden animate-fade-in-up delay-400 bg-white backdrop-blur-md rounded-sm shadow-2xl max-w-4xl mx-auto overflow-hidden"
           >
             <div className="flex flex-col md:flex-row items-stretch">
               {/* Check-in / Check-out Combined */}
