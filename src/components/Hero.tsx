@@ -1,6 +1,22 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, CalendarIcon, Users } from "lucide-react";
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
@@ -10,6 +26,9 @@ const slides = [heroSlide1, heroSlide2, heroSlide3];
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [checkIn, setCheckIn] = useState<Date>();
+  const [checkOut, setCheckOut] = useState<Date>();
+  const [guests, setGuests] = useState<string>();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,6 +36,11 @@ const Hero = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log({ checkIn, checkOut, guests });
+  };
 
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
@@ -63,15 +87,100 @@ const Hero = () => {
             confort et innovation se rencontrent pour créer des expériences inoubliables.
           </p>
 
-          {/* CTAs */}
-          <div className="animate-hidden animate-fade-in-up delay-400 flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="heroSolid" size="xl">
-              Découvrir nos résidences
-            </Button>
-            <Button variant="hero" size="xl">
-              Réserver un séjour
-            </Button>
-          </div>
+          {/* Reservation Form */}
+          <form 
+            onSubmit={handleSubmit}
+            className="animate-hidden animate-fade-in-up delay-400 bg-background/95 backdrop-blur-md p-6 md:p-8 rounded-sm shadow-2xl max-w-3xl mx-auto"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              {/* Check-in Date */}
+              <div className="text-left">
+                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  Arrivée
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal border-gold/20 hover:border-gold/40",
+                        !checkIn && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 text-gold" />
+                      {checkIn ? format(checkIn, "dd MMM yyyy", { locale: fr }) : "Sélectionner"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkIn}
+                      onSelect={setCheckIn}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Check-out Date */}
+              <div className="text-left">
+                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  Départ
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal border-gold/20 hover:border-gold/40",
+                        !checkOut && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4 text-gold" />
+                      {checkOut ? format(checkOut, "dd MMM yyyy", { locale: fr }) : "Sélectionner"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={checkOut}
+                      onSelect={setCheckOut}
+                      disabled={(date) => date < (checkIn || new Date())}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              {/* Guests */}
+              <div className="text-left">
+                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
+                  Voyageurs
+                </label>
+                <Select value={guests} onValueChange={setGuests}>
+                  <SelectTrigger className="border-gold/20 hover:border-gold/40">
+                    <Users className="mr-2 h-4 w-4 text-gold" />
+                    <SelectValue placeholder="Nombre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 personne</SelectItem>
+                    <SelectItem value="2">2 personnes</SelectItem>
+                    <SelectItem value="3">3 personnes</SelectItem>
+                    <SelectItem value="4">4 personnes</SelectItem>
+                    <SelectItem value="5">5+ personnes</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Submit Button */}
+              <Button type="submit" variant="gold" size="lg" className="w-full">
+                Rechercher
+              </Button>
+            </div>
+          </form>
         </div>
       </div>
 
