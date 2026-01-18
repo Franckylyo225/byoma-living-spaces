@@ -1,22 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown, CalendarIcon, Users } from "lucide-react";
+import { ChevronDown, CalendarIcon, Minus, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import type { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import heroSlide2 from "@/assets/hero-slide-2.jpg";
@@ -26,9 +20,9 @@ const slides = [heroSlide1, heroSlide2, heroSlide3];
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [checkIn, setCheckIn] = useState<Date>();
-  const [checkOut, setCheckOut] = useState<Date>();
-  const [guests, setGuests] = useState<string>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,8 +33,13 @@ const Hero = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ checkIn, checkOut, guests });
+    console.log({ dateRange, adults, children });
   };
+
+  const incrementAdults = () => setAdults((prev) => prev + 1);
+  const decrementAdults = () => setAdults((prev) => Math.max(0, prev - 1));
+  const incrementChildren = () => setChildren((prev) => prev + 1);
+  const decrementChildren = () => setChildren((prev) => Math.max(0, prev - 1));
 
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
@@ -90,33 +89,41 @@ const Hero = () => {
           {/* Reservation Form */}
           <form 
             onSubmit={handleSubmit}
-            className="animate-hidden animate-fade-in-up delay-400 bg-background/95 backdrop-blur-md p-6 md:p-8 rounded-sm shadow-2xl max-w-3xl mx-auto"
+            className="animate-hidden animate-fade-in-up delay-400 bg-background/98 backdrop-blur-md rounded-sm shadow-2xl max-w-4xl mx-auto overflow-hidden"
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-              {/* Check-in Date */}
-              <div className="text-left">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
-                  Arrivée
-                </label>
+            <div className="flex flex-col md:flex-row items-stretch">
+              {/* Check-in / Check-out Combined */}
+              <div className="flex-1 border-b md:border-b-0 md:border-r border-border/30">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal border-gold/20 hover:border-gold/40",
-                        !checkIn && "text-muted-foreground"
-                      )}
+                    <button
+                      type="button"
+                      className="w-full h-full px-6 py-5 flex items-center justify-between text-left hover:bg-muted/30 transition-colors"
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-gold" />
-                      {checkIn ? format(checkIn, "dd MMM yyyy", { locale: fr }) : "Sélectionner"}
-                    </Button>
+                      <span className={cn(
+                        "text-sm",
+                        !dateRange?.from && "text-muted-foreground"
+                      )}>
+                        {dateRange?.from ? (
+                          dateRange.to ? (
+                            `${format(dateRange.from, "dd MMM", { locale: fr })} - ${format(dateRange.to, "dd MMM", { locale: fr })}`
+                          ) : (
+                            format(dateRange.from, "dd MMM yyyy", { locale: fr })
+                          )
+                        ) : (
+                          "Check in / Check out"
+                        )}
+                      </span>
+                      <CalendarIcon className="h-5 w-5 text-gold" />
+                    </button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
-                      mode="single"
-                      selected={checkIn}
-                      onSelect={setCheckIn}
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={setDateRange}
                       disabled={(date) => date < new Date()}
+                      numberOfMonths={2}
                       initialFocus
                       className="pointer-events-auto"
                     />
@@ -124,59 +131,62 @@ const Hero = () => {
                 </Popover>
               </div>
 
-              {/* Check-out Date */}
-              <div className="text-left">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
-                  Départ
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal border-gold/20 hover:border-gold/40",
-                        !checkOut && "text-muted-foreground"
-                      )}
+              {/* Adults Counter */}
+              <div className="flex items-center justify-between px-6 py-4 border-b md:border-b-0 md:border-r border-border/30 min-w-[160px]">
+                <span className="text-sm text-muted-foreground">Adultes</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium w-4 text-center">{adults}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={decrementAdults}
+                      className="w-8 h-8 rounded-full border border-border/50 flex items-center justify-center hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30"
+                      disabled={adults === 0}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-gold" />
-                      {checkOut ? format(checkOut, "dd MMM yyyy", { locale: fr }) : "Sélectionner"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={checkOut}
-                      onSelect={setCheckOut}
-                      disabled={(date) => date < (checkIn || new Date())}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={incrementAdults}
+                      className="w-8 h-8 rounded-full border border-border/50 flex items-center justify-center hover:border-gold/50 hover:text-gold transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Guests */}
-              <div className="text-left">
-                <label className="text-xs uppercase tracking-wider text-muted-foreground mb-2 block">
-                  Voyageurs
-                </label>
-                <Select value={guests} onValueChange={setGuests}>
-                  <SelectTrigger className="border-gold/20 hover:border-gold/40">
-                    <Users className="mr-2 h-4 w-4 text-gold" />
-                    <SelectValue placeholder="Nombre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1 personne</SelectItem>
-                    <SelectItem value="2">2 personnes</SelectItem>
-                    <SelectItem value="3">3 personnes</SelectItem>
-                    <SelectItem value="4">4 personnes</SelectItem>
-                    <SelectItem value="5">5+ personnes</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Children Counter */}
+              <div className="flex items-center justify-between px-6 py-4 border-b md:border-b-0 md:border-r border-border/30 min-w-[160px]">
+                <span className="text-sm text-muted-foreground">Enfants</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-medium w-4 text-center">{children}</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={decrementChildren}
+                      className="w-8 h-8 rounded-full border border-border/50 flex items-center justify-center hover:border-gold/50 hover:text-gold transition-colors disabled:opacity-30"
+                      disabled={children === 0}
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={incrementChildren}
+                      className="w-8 h-8 rounded-full border border-border/50 flex items-center justify-center hover:border-gold/50 hover:text-gold transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
 
               {/* Submit Button */}
-              <Button type="submit" variant="gold" size="lg" className="w-full">
+              <Button 
+                type="submit" 
+                variant="gold" 
+                className="m-3 md:m-2 px-8 h-auto py-4 md:py-0 rounded-sm"
+              >
                 Rechercher
               </Button>
             </div>
