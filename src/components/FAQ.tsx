@@ -48,67 +48,60 @@ const FAQ = () => {
       className="py-24 md:py-32 bg-background"
     >
       <div className="container mx-auto px-6 md:px-12">
-        {/* Section Header */}
-        <div
-          className={`text-center mb-16 md:mb-20 ${
-            isVisible ? "animate-fade-in-up" : "opacity-0"
-          }`}
-        >
-          <span className="inline-block text-gold font-medium tracking-[0.3em] uppercase text-sm mb-4">
-            Questions Fréquentes
-          </span>
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
-            Tout ce que vous
-            <br />
-            <span className="italic text-gold">devez savoir</span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Retrouvez les réponses aux questions les plus fréquemment posées
-            concernant nos résidences et services.
-          </p>
-        </div>
-
-        {/* FAQ Accordion */}
-        <div
-          className={`max-w-3xl mx-auto ${
-            isVisible ? "animate-fade-in-up" : "opacity-0"
-          }`}
-          style={{ animationDelay: "200ms" }}
-        >
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index}
-                value={`item-${index}`}
-                className="border border-gold/20 rounded-sm px-6 data-[state=open]:border-gold/40 transition-colors"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+          {/* Left Column - Section Header */}
+          <div
+            className={`lg:sticky lg:top-32 lg:self-start ${
+              isVisible ? "animate-fade-in-up" : "opacity-0"
+            }`}
+          >
+            <span className="inline-block text-gold font-medium tracking-[0.3em] uppercase text-sm mb-4">
+              Questions Fréquentes
+            </span>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-6">
+              Tout ce que vous
+              <br />
+              <span className="italic text-gold">devez savoir</span>
+            </h2>
+            <p className="text-muted-foreground text-lg mb-8">
+              Retrouvez les réponses aux questions les plus fréquemment posées
+              concernant nos résidences et services.
+            </p>
+            <p className="text-muted-foreground">
+              Vous avez d'autres questions ?{" "}
+              <a
+                href="#contact"
+                className="text-gold hover:underline underline-offset-4"
               >
-                <AccordionTrigger className="text-left font-medium text-foreground hover:text-gold transition-colors py-6">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground leading-relaxed pb-6">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+                Contactez-nous
+              </a>
+            </p>
+          </div>
 
-        {/* Contact CTA */}
-        <div
-          className={`text-center mt-12 ${
-            isVisible ? "animate-fade-in-up" : "opacity-0"
-          }`}
-          style={{ animationDelay: "400ms" }}
-        >
-          <p className="text-muted-foreground">
-            Vous avez d'autres questions ?{" "}
-            <a
-              href="#contact"
-              className="text-gold hover:underline underline-offset-4"
-            >
-              Contactez-nous
-            </a>
-          </p>
+          {/* Right Column - FAQ Accordion */}
+          <div
+            className={`${
+              isVisible ? "animate-fade-in-up" : "opacity-0"
+            }`}
+            style={{ animationDelay: "200ms" }}
+          >
+            <Accordion type="single" collapsible className="space-y-4">
+              {faqs.map((faq, index) => (
+                <AccordionItem
+                  key={index}
+                  value={`item-${index}`}
+                  className="border border-gold/20 rounded-sm px-6 data-[state=open]:border-gold/40 transition-colors"
+                >
+                  <AccordionTrigger className="text-left font-medium text-foreground hover:text-gold transition-colors py-6">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground leading-relaxed pb-6">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </div>
     </section>
