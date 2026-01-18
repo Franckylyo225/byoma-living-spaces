@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Crown, Sparkles, Handshake } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import aboutImage from "@/assets/about-image.jpg";
+import residenceLounge from "@/assets/residence-lounge.jpg";
 
 const About = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -23,92 +24,72 @@ const About = () => {
     return () => observer.disconnect();
   }, []);
 
-  const values = [
-    {
-      icon: Crown,
-      title: "Excellence",
-      description: "Un engagement sans compromis pour la qualité et le raffinement dans chaque détail.",
-    },
-    {
-      icon: Sparkles,
-      title: "Innovation",
-      description: "Des solutions modernes et intelligentes pour un confort optimal.",
-    },
-    {
-      icon: Handshake,
-      title: "Authenticité",
-      description: "Une expérience chaleureuse et personnalisée, loin des standards impersonnels.",
-    },
-  ];
+  const scrollToResidences = () => {
+    const element = document.getElementById("residences");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <section
       id="about"
       ref={sectionRef}
-      className="py-24 md:py-32 bg-background"
+      className="py-24 md:py-32 bg-muted/30"
     >
       <div className="container mx-auto px-6">
-        {/* Top Section: Text Left, Image Right */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center mb-16 lg:mb-24">
-          {/* Left Content */}
-          <div className={`${isVisible ? "animate-slide-in-left" : "opacity-0"}`}>
-            <div className="accent-line mb-8" />
-            <p className="text-accent tracking-luxury uppercase text-sm mb-4">
-              Notre Philosophie
-            </p>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-foreground mb-8 leading-tight">
-              Redéfinir
-              <br />
-              <span className="italic text-accent">l'Hospitalité</span>
-            </h2>
-            <p className="text-muted-foreground text-lg leading-relaxed mb-8">
-              BYOMA incarne une vision audacieuse de l'hébergement premium. 
-              Nous créons des espaces où l'élégance architecturale rencontre 
-              le confort absolu, où chaque séjour devient une expérience 
-              mémorable.
-            </p>
-            <p className="text-muted-foreground leading-relaxed">
-              Notre approche innovante combine le meilleur de l'hôtellerie 
-              traditionnelle avec les attentes des voyageurs modernes, 
-              offrant flexibilité, intimité et services d'exception.
-            </p>
-          </div>
-
-          {/* Right Image */}
-          <div className={`${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
-            <div className="relative overflow-hidden rounded-sm">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Left: Overlapping Images */}
+          <div className={`relative ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
+            {/* Main vertical image */}
+            <div className="relative z-10 w-[65%]">
               <img
                 src={aboutImage}
-                alt="Expérience BYOMA - Confort et élégance"
-                className="w-full h-[500px] lg:h-[600px] object-cover"
+                alt="Chambre BYOMA - Confort et élégance"
+                className="w-full h-[450px] md:h-[550px] object-cover rounded-lg shadow-2xl"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 to-transparent" />
+            </div>
+            {/* Second overlapping image */}
+            <div 
+              className="absolute bottom-0 right-0 w-[55%] z-20 translate-y-8"
+              style={{ animationDelay: "200ms" }}
+            >
+              <img
+                src={residenceLounge}
+                alt="Expérience culinaire BYOMA"
+                className="w-full h-[280px] md:h-[350px] object-cover rounded-lg shadow-2xl"
+              />
             </div>
           </div>
-        </div>
 
-        {/* Bottom Section: 3 Value Cards */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
-          {values.map((value, index) => {
-            const Icon = value.icon;
-            return (
-              <div
-                key={value.title}
-                className={`group p-8 border border-border rounded-sm hover:border-accent transition-all duration-500 card-elegant text-center ${
-                  isVisible ? "animate-fade-in-up" : "opacity-0"
-                }`}
-                style={{ animationDelay: `${(index + 1) * 150 + 300}ms` }}
-              >
-                <Icon className="w-12 h-12 text-accent/50 group-hover:text-accent transition-colors mx-auto mb-6" />
-                <h3 className="font-display text-2xl text-foreground mb-4">
-                  {value.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {value.description}
-                </p>
-              </div>
-            );
-          })}
+          {/* Right: Text Content */}
+          <div className={`lg:pl-8 ${isVisible ? "animate-slide-in-left" : "opacity-0"}`} style={{ animationDelay: "300ms" }}>
+            <p className="text-accent tracking-luxury uppercase text-sm mb-4 font-medium">
+              Bienvenue
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] text-foreground mb-8 leading-[1.1] font-bold">
+              Confort, Élégance
+              <br />
+              et Hospitalité
+              <br />
+              d'Exception
+            </h2>
+            <p className="text-muted-foreground text-lg leading-relaxed mb-8">
+              Bienvenue chez BYOMA, où le confort rencontre l'élégance dans un 
+              cadre conçu pour la détente et des séjours inoubliables. Situées 
+              dans des destinations privilégiées, nos résidences offrent des 
+              espaces soigneusement aménagés, des équipements modernes et une 
+              hospitalité chaleureuse adaptée à chaque voyageur. Des matins 
+              paisibles aux nuits reposantes, chaque détail est pensé pour 
+              garantir un séjour fluide, confortable et mémorable.
+            </p>
+            <Button 
+              onClick={scrollToResidences}
+              className="bg-accent hover:bg-accent/90 text-accent-foreground px-8 py-6 text-base rounded-full"
+            >
+              Découvrir nos résidences
+            </Button>
+          </div>
         </div>
       </div>
     </section>
