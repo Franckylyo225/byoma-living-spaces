@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import logoByoma from "@/assets/logo-byoma.png";
+import logoByomaDark from "@/assets/logo-byoma-dark.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,11 +35,9 @@ const Header = () => {
         {/* Logo */}
         <a href="#" className="relative z-10">
           <img
-            src={logoByoma}
+            src={isScrolled ? logoByomaDark : logoByoma}
             alt="BYOMA Résidence"
-            className={`h-12 md:h-16 w-auto transition-all duration-300 ${
-              isScrolled ? "" : "brightness-0 invert"
-            }`}
+            className="h-12 md:h-16 w-auto transition-all duration-300"
           />
         </a>
 
