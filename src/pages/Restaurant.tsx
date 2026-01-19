@@ -5,6 +5,10 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Utensils, Wine, Leaf } from "lucide-react";
 import restaurantHero from "@/assets/restaurant-hero.jpg";
+import restaurantPlat from "@/assets/restaurant-plat.jpg";
+import restaurantSalle from "@/assets/restaurant-salle.jpg";
+import restaurantAmbiance from "@/assets/restaurant-ambiance.jpg";
+
 const Restaurant = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -88,14 +92,10 @@ const Restaurant = () => {
             </div>
             <div className="relative">
               <img 
-                src="https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=2070"
+                src={restaurantPlat}
                 alt="Plat signature BYOMA"
                 className="w-full h-[500px] object-cover rounded-sm"
               />
-              <div className="absolute -bottom-6 -left-6 bg-accent text-accent-foreground p-6 rounded-sm">
-                <p className="font-display text-3xl font-light">1★</p>
-                <p className="text-sm tracking-wider">Michelin</p>
-              </div>
             </div>
           </div>
         </div>
@@ -158,18 +158,18 @@ const Restaurant = () => {
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-4">
             <img 
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=2070"
+              src={restaurantSalle}
               alt="Salle du restaurant"
               className="w-full h-80 object-cover rounded-sm"
             />
             <img 
-              src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=2074"
-              alt="Bar à vins"
+              src={restaurantAmbiance}
+              alt="Ambiance du restaurant"
               className="w-full h-80 object-cover rounded-sm"
             />
             <img 
-              src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?q=80&w=2070"
-              alt="Terrasse"
+              src={restaurantPlat}
+              alt="Service"
               className="w-full h-80 object-cover rounded-sm"
             />
           </div>
