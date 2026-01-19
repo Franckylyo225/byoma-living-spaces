@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 import logoByoma from "@/assets/logo-byoma.png";
 import logoByomaDark from "@/assets/logo-byoma-dark.png";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,10 +20,11 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { href: "#residences", label: "Résidences" },
-    { href: "#experience", label: "Expérience" },
-    { href: "#services", label: "Services" },
-    { href: "#contact", label: "Contact" },
+    { href: isHomePage ? "#residences" : "/#residences", label: "Résidences", isExternal: !isHomePage },
+    { href: "/restaurant", label: "Restaurant", isExternal: true },
+    { href: isHomePage ? "#experience" : "/#experience", label: "Expérience", isExternal: !isHomePage },
+    { href: isHomePage ? "#services" : "/#services", label: "Services", isExternal: !isHomePage },
+    { href: isHomePage ? "#contact" : "/#contact", label: "Contact", isExternal: !isHomePage },
   ];
 
   return (
@@ -44,15 +48,27 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className={`text-sm tracking-wider uppercase transition-colors duration-300 hover:text-accent ${
-                isScrolled ? "text-foreground" : "text-primary-foreground"
-              }`}
-            >
-              {link.label}
-            </a>
+            link.isExternal || link.href.startsWith("/") ? (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`text-sm tracking-wider uppercase transition-colors duration-300 hover:text-accent ${
+                  isScrolled ? "text-foreground" : "text-primary-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <a
+                key={link.href}
+                href={link.href}
+                className={`text-sm tracking-wider uppercase transition-colors duration-300 hover:text-accent ${
+                  isScrolled ? "text-foreground" : "text-primary-foreground"
+                }`}
+              >
+                {link.label}
+              </a>
+            )
           ))}
           <Button
             variant={isScrolled ? "elegant" : "hero"}
@@ -83,14 +99,25 @@ const Header = () => {
         >
           <nav className="flex flex-col items-center justify-center h-full gap-8">
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="font-display text-3xl text-foreground hover:text-accent transition-colors"
-              >
-                {link.label}
-              </a>
+              link.isExternal || link.href.startsWith("/") ? (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="font-display text-3xl text-foreground hover:text-accent transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ) : (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="font-display text-3xl text-foreground hover:text-accent transition-colors"
+                >
+                  {link.label}
+                </a>
+              )
             ))}
             <Button variant="elegant" size="lg" className="mt-4">
               Réserver
