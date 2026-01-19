@@ -202,16 +202,17 @@ const Restaurant = () => {
                 <h3 className="font-display text-xl mb-2 text-foreground">Adresse</h3>
                 <p className="text-muted-foreground text-sm">
                   BYOMA Résidence<br />
-                  123 Avenue des Champs-Élysées<br />
-                  75008 Paris
+                  Cocody Plateau Dokui, Rue Djomi<br />
+                  Abidjan
                 </p>
               </div>
               <div className="p-6">
                 <Phone className="w-8 h-8 mx-auto mb-4 text-accent" />
                 <h3 className="font-display text-xl mb-2 text-foreground">Réservations</h3>
                 <p className="text-muted-foreground text-sm">
-                  +33 1 23 45 67 89<br />
-                  restaurant@byoma.com
+                  +225 07 15 72 78 07<br />
+                  +225 05 54 12 69 69<br />
+                  lesresidencesbyoma@byoma.ci
                 </p>
               </div>
             </div>
