@@ -60,29 +60,36 @@ const Restaurant = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, nextImage, prevImage]);
 
-  const menuHighlights = [
-    {
-      category: "Entrées",
-      items: [
-        { name: "Carpaccio de Saint-Jacques", description: "Agrumes, huile de truffe, herbes fraîches", price: "28€" },
-        { name: "Foie Gras Mi-Cuit", description: "Chutney de figues, brioche toastée", price: "32€" },
-      ]
-    },
-    {
-      category: "Plats",
-      items: [
-        { name: "Filet de Bœuf Wagyu", description: "Jus corsé, légumes de saison, pommes fondantes", price: "65€" },
-        { name: "Homard Bleu Rôti", description: "Beurre blanc au champagne, risotto crémeux", price: "78€" },
-      ]
-    },
-    {
-      category: "Desserts",
-      items: [
-        { name: "Soufflé au Chocolat Grand Cru", description: "Cœur coulant, glace vanille Bourbon", price: "18€" },
-        { name: "Tarte Tatin Revisitée", description: "Caramel beurre salé, crème fraîche", price: "16€" },
-      ]
-    }
-  ];
+  const [activeCategory, setActiveCategory] = useState("Entrées");
+
+  const menuCategories = ["Entrées", "Plats", "Desserts"];
+
+  const menuHighlights: Record<string, { name: string; description: string; price: string; image: string }[]> = {
+    "Entrées": [
+      { name: "Carpaccio de Saint-Jacques", description: "Agrumes, huile de truffe, herbes fraîches", price: "28€", image: restaurantPlat },
+      { name: "Foie Gras Mi-Cuit", description: "Chutney de figues, brioche toastée", price: "32€", image: restaurantAmbiance },
+      { name: "Tartare de Saumon", description: "Avocat, sésame, sauce ponzu", price: "26€", image: restaurantSalle },
+      { name: "Velouté de Homard", description: "Cognac flambé, crème fraîche", price: "34€", image: restaurantPlat },
+      { name: "Huîtres Fines de Claire", description: "Citron, échalotes, vinaigre", price: "36€", image: restaurantAmbiance },
+      { name: "Burrata Crémeuse", description: "Tomates confites, basilic, pesto", price: "24€", image: restaurantSalle },
+    ],
+    "Plats": [
+      { name: "Filet de Bœuf Wagyu", description: "Jus corsé, légumes de saison, pommes fondantes", price: "65€", image: restaurantPlat },
+      { name: "Homard Bleu Rôti", description: "Beurre blanc au champagne, risotto crémeux", price: "78€", image: restaurantAmbiance },
+      { name: "Carré d'Agneau", description: "Croûte d'herbes, jus au thym", price: "52€", image: restaurantSalle },
+      { name: "Bar de Ligne", description: "Fenouil braisé, sauce vierge", price: "48€", image: restaurantPlat },
+      { name: "Magret de Canard", description: "Cerises, sauce aux épices", price: "44€", image: restaurantAmbiance },
+      { name: "Risotto aux Truffes", description: "Parmesan 24 mois, truffe noire", price: "56€", image: restaurantSalle },
+    ],
+    "Desserts": [
+      { name: "Soufflé au Chocolat Grand Cru", description: "Cœur coulant, glace vanille Bourbon", price: "18€", image: restaurantPlat },
+      { name: "Tarte Tatin Revisitée", description: "Caramel beurre salé, crème fraîche", price: "16€", image: restaurantAmbiance },
+      { name: "Crème Brûlée", description: "Vanille de Madagascar", price: "14€", image: restaurantSalle },
+      { name: "Paris-Brest", description: "Praliné noisette, chantilly", price: "17€", image: restaurantPlat },
+      { name: "Mousse au Citron", description: "Meringue italienne, zestes confits", price: "15€", image: restaurantAmbiance },
+      { name: "Mille-Feuille", description: "Vanille, caramel, feuillantine", price: "16€", image: restaurantSalle },
+    ],
+  };
 
   const features = [
     { icon: Utensils, title: "Cuisine Gastronomique", description: "Une cuisine raffinée mêlant traditions et modernité" },
@@ -163,37 +170,91 @@ const Restaurant = () => {
       </section>
 
       {/* Menu Highlights */}
-      <section className="py-20 md:py-32">
+      <section className="py-20 md:py-32 bg-secondary/20">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <p className="text-sm tracking-[0.2em] uppercase text-accent mb-4">Notre Carte</p>
-            <h2 className="font-display text-4xl md:text-5xl font-light text-foreground">
-              Sélection du Chef
-            </h2>
-          </div>
-          
-          <div className="max-w-4xl mx-auto">
-            {menuHighlights.map((section, sectionIndex) => (
-              <div key={sectionIndex} className="mb-12">
-                <h3 className="font-display text-2xl text-accent mb-6 text-center">{section.category}</h3>
-                <div className="space-y-6">
-                  {section.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex justify-between items-start border-b border-border pb-4">
-                      <div>
-                        <h4 className="font-display text-xl text-foreground mb-1">{item.name}</h4>
-                        <p className="text-muted-foreground text-sm">{item.description}</p>
-                      </div>
-                      <span className="font-display text-xl text-accent ml-4">{item.price}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+          {/* Category Tabs */}
+          <div className="flex justify-center mb-12">
+            <div className="flex gap-0 border-b border-border">
+              {menuCategories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`px-8 py-4 text-sm tracking-[0.15em] uppercase font-medium transition-all duration-300 ${
+                    activeCategory === category
+                      ? "text-foreground border-b-2 border-accent -mb-[1px]"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="text-center mt-12">
+          {/* Promotional Banner */}
+          <div 
+            className="relative rounded-lg overflow-hidden mb-16 max-w-5xl mx-auto"
+            style={{
+              backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${restaurantHero})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="flex justify-between items-center p-8 md:p-12">
+              <div>
+                <p className="text-primary-foreground/80 text-sm tracking-wider uppercase mb-2">
+                  {activeCategory === "Entrées" ? "Offre Spéciale Entrées" : activeCategory === "Plats" ? "Menu Dégustation" : "Douceurs du Chef"}
+                </p>
+                <h3 className="font-display text-3xl md:text-4xl text-primary-foreground mb-2">
+                  {activeCategory === "Entrées" ? "Menu Découverte 45€" : activeCategory === "Plats" ? "Menu Prestige 95€" : "Assiette Gourmande 28€"}
+                </h3>
+                <p className="text-primary-foreground/70 italic">
+                  {activeCategory === "Entrées" ? "3 entrées au choix, vin inclus" : activeCategory === "Plats" ? "Entrée, plat, dessert, accord mets & vins" : "Sélection de 3 desserts signature"}
+                </p>
+                <Button variant="elegant" className="mt-6">
+                  Voir le Menu
+                </Button>
+              </div>
+              <div className="hidden md:block text-right">
+                <p className="font-display text-accent italic text-xl">/// Du Lundi au Jeudi ///</p>
+                <p className="font-display text-primary-foreground text-4xl md:text-5xl font-bold tracking-wide">HAPPY</p>
+                <p className="font-display text-primary-foreground text-4xl md:text-5xl font-bold tracking-wide">HOUR</p>
+                <p className="text-accent italic mt-2">// 18h - 20h //</p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Menu Items Grid */}
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
+              {menuHighlights[activeCategory].map((item, index) => (
+                <div key={index} className="flex items-center gap-4 group">
+                  {/* Circular Image */}
+                  <div className="w-20 h-20 flex-shrink-0 rounded-full overflow-hidden border-2 border-accent/20 group-hover:border-accent transition-colors duration-300">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline gap-2">
+                      <h4 className="font-display text-lg text-foreground truncate">{item.name}</h4>
+                      <span className="flex-1 border-b border-dotted border-muted-foreground/40 mx-2 hidden sm:block"></span>
+                      <span className="font-display text-lg text-accent font-medium">{item.price}</span>
+                    </div>
+                    <p className="text-muted-foreground text-sm italic mt-1">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center mt-16">
             <Button variant="outline" size="lg">
-              Voir la carte complète
+              Télécharger la carte complète
             </Button>
           </div>
         </div>
