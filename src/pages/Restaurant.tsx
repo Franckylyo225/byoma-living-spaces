@@ -8,6 +8,7 @@ import restaurantHero from "@/assets/restaurant-hero.jpg";
 import restaurantPlat from "@/assets/restaurant-plat.jpg";
 import restaurantSalle from "@/assets/restaurant-salle.jpg";
 import restaurantAmbiance from "@/assets/restaurant-ambiance.jpg";
+import logoSignature from "@/assets/logo-signature.png";
 
 // Menu images
 import entree1 from "@/assets/menu/entree-1.jpg";
@@ -122,10 +123,12 @@ const Restaurant = () => {
           }}
         />
         <div className="relative z-10 text-center text-primary-foreground px-6">
-          <p className="text-sm tracking-[0.3em] uppercase mb-4 text-primary-foreground/80">Restaurant Gastronomique</p>
-          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-light mb-6">
-            BYOMA SIGNATURE
-          </h1>
+          <p className="text-sm tracking-[0.3em] uppercase mb-6 text-primary-foreground/80">Restaurant Gastronomique</p>
+          <img 
+            src={logoSignature} 
+            alt="BYOMA Signature" 
+            className="h-24 md:h-32 lg:h-40 w-auto mx-auto mb-8"
+          />
           <p className="text-lg md:text-xl max-w-2xl mx-auto text-primary-foreground/90 font-light">
             Une expérience culinaire d'exception au cœur de notre résidence
           </p>
