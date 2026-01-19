@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Heart, Shield, Award } from "lucide-react";
 import aboutImage from "@/assets/about-image.jpg";
 import residenceLounge from "@/assets/residence-lounge.jpg";
-import heroResidence from "@/assets/hero-residence.jpg";
+import heroApropos from "@/assets/hero-apropos.jpg";
 
 const values = [
   {
@@ -46,7 +46,7 @@ const APropos = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroResidence})`,
+            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroApropos})`,
           }}
         />
         <div className="relative z-10 text-center text-primary-foreground px-6">
