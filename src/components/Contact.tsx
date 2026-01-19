@@ -39,17 +39,17 @@ const Contact = () => {
     {
       icon: MapPin,
       label: "Adresse",
-      value: "123 Avenue des Champs-Élysées, Paris",
+      value: "Cocody Plateau Dokui, Rue Djomi, Abidjan",
     },
     {
       icon: Phone,
       label: "Téléphone",
-      value: "+33 1 23 45 67 89",
+      value: "+225 07 00 255 295",
     },
     {
       icon: Mail,
       label: "Email",
-      value: "contact@byoma.com",
+      value: "lesresidencesbyoma@byoma.ci",
     },
   ];
 

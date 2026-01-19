@@ -42,10 +42,15 @@ const Footer = () => {
               alt="BYOMA Résidence" 
               className="h-16 md:h-20 w-auto mb-6"
             />
-            <p className="text-primary-foreground/60 leading-relaxed max-w-sm mb-8">
+            <p className="text-primary-foreground/60 leading-relaxed max-w-sm mb-6">
               Résidences hôtelières d'exception. Redéfinir l'art de 
               séjourner avec élégance, confort et innovation.
             </p>
+            <div className="text-primary-foreground/60 text-sm space-y-2 mb-8">
+              <p>📍 Cocody Plateau Dokui, Rue Djomi, Abidjan</p>
+              <p>📞 +225 07 00 255 295</p>
+              <p>✉️ lesresidencesbyoma@byoma.ci</p>
+            </div>
             {/* Social Links */}
             <div className="flex gap-4">
               {socials.map((social) => (
