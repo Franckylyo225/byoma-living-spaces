@@ -183,6 +183,14 @@ const Restaurant = () => {
       {/* Menu Highlights */}
       <section className="py-20 md:py-32 bg-secondary/20">
         <div className="container mx-auto px-6">
+          {/* Section Header */}
+          <div className="text-center mb-12">
+            <p className="text-sm tracking-[0.2em] uppercase text-accent mb-4">Notre Carte</p>
+            <h2 className="font-display text-4xl md:text-5xl font-light text-foreground">
+              Découvrez nos créations
+            </h2>
+          </div>
+
           {/* Category Tabs */}
           <div className="flex justify-center mb-12">
             <div className="flex gap-0 border-b border-border">
