@@ -9,6 +9,17 @@ import restaurantPlat from "@/assets/restaurant-plat.jpg";
 import restaurantSalle from "@/assets/restaurant-salle.jpg";
 import restaurantAmbiance from "@/assets/restaurant-ambiance.jpg";
 
+// Menu images
+import entree1 from "@/assets/menu/entree-1.jpg";
+import entree2 from "@/assets/menu/entree-2.jpg";
+import entree3 from "@/assets/menu/entree-3.jpg";
+import plat1 from "@/assets/menu/plat-1.jpg";
+import plat2 from "@/assets/menu/plat-2.jpg";
+import plat3 from "@/assets/menu/plat-3.jpg";
+import dessert1 from "@/assets/menu/dessert-1.jpg";
+import dessert2 from "@/assets/menu/dessert-2.jpg";
+import dessert3 from "@/assets/menu/dessert-3.jpg";
+
 const galleryImages = [
   { src: restaurantSalle, alt: "Salle du restaurant" },
   { src: restaurantAmbiance, alt: "Ambiance du restaurant" },
@@ -66,28 +77,28 @@ const Restaurant = () => {
 
   const menuHighlights: Record<string, { name: string; description: string; price: string; image: string }[]> = {
     "Entrées": [
-      { name: "Carpaccio de Saint-Jacques", description: "Agrumes, huile de truffe, herbes fraîches", price: "28€", image: restaurantPlat },
-      { name: "Foie Gras Mi-Cuit", description: "Chutney de figues, brioche toastée", price: "32€", image: restaurantAmbiance },
-      { name: "Tartare de Saumon", description: "Avocat, sésame, sauce ponzu", price: "26€", image: restaurantSalle },
-      { name: "Velouté de Homard", description: "Cognac flambé, crème fraîche", price: "34€", image: restaurantPlat },
-      { name: "Huîtres Fines de Claire", description: "Citron, échalotes, vinaigre", price: "36€", image: restaurantAmbiance },
-      { name: "Burrata Crémeuse", description: "Tomates confites, basilic, pesto", price: "24€", image: restaurantSalle },
+      { name: "Carpaccio de Saint-Jacques", description: "Agrumes, huile de truffe, herbes fraîches", price: "28€", image: entree1 },
+      { name: "Foie Gras Mi-Cuit", description: "Chutney de figues, brioche toastée", price: "32€", image: entree2 },
+      { name: "Tartare de Saumon", description: "Avocat, sésame, sauce ponzu", price: "26€", image: entree3 },
+      { name: "Velouté de Homard", description: "Cognac flambé, crème fraîche", price: "34€", image: entree1 },
+      { name: "Huîtres Fines de Claire", description: "Citron, échalotes, vinaigre", price: "36€", image: entree2 },
+      { name: "Burrata Crémeuse", description: "Tomates confites, basilic, pesto", price: "24€", image: entree3 },
     ],
     "Plats": [
-      { name: "Filet de Bœuf Wagyu", description: "Jus corsé, légumes de saison, pommes fondantes", price: "65€", image: restaurantPlat },
-      { name: "Homard Bleu Rôti", description: "Beurre blanc au champagne, risotto crémeux", price: "78€", image: restaurantAmbiance },
-      { name: "Carré d'Agneau", description: "Croûte d'herbes, jus au thym", price: "52€", image: restaurantSalle },
-      { name: "Bar de Ligne", description: "Fenouil braisé, sauce vierge", price: "48€", image: restaurantPlat },
-      { name: "Magret de Canard", description: "Cerises, sauce aux épices", price: "44€", image: restaurantAmbiance },
-      { name: "Risotto aux Truffes", description: "Parmesan 24 mois, truffe noire", price: "56€", image: restaurantSalle },
+      { name: "Filet de Bœuf Wagyu", description: "Jus corsé, légumes de saison, pommes fondantes", price: "65€", image: plat1 },
+      { name: "Homard Bleu Rôti", description: "Beurre blanc au champagne, risotto crémeux", price: "78€", image: plat2 },
+      { name: "Carré d'Agneau", description: "Croûte d'herbes, jus au thym", price: "52€", image: plat3 },
+      { name: "Bar de Ligne", description: "Fenouil braisé, sauce vierge", price: "48€", image: plat1 },
+      { name: "Magret de Canard", description: "Cerises, sauce aux épices", price: "44€", image: plat2 },
+      { name: "Risotto aux Truffes", description: "Parmesan 24 mois, truffe noire", price: "56€", image: plat3 },
     ],
     "Desserts": [
-      { name: "Soufflé au Chocolat Grand Cru", description: "Cœur coulant, glace vanille Bourbon", price: "18€", image: restaurantPlat },
-      { name: "Tarte Tatin Revisitée", description: "Caramel beurre salé, crème fraîche", price: "16€", image: restaurantAmbiance },
-      { name: "Crème Brûlée", description: "Vanille de Madagascar", price: "14€", image: restaurantSalle },
-      { name: "Paris-Brest", description: "Praliné noisette, chantilly", price: "17€", image: restaurantPlat },
-      { name: "Mousse au Citron", description: "Meringue italienne, zestes confits", price: "15€", image: restaurantAmbiance },
-      { name: "Mille-Feuille", description: "Vanille, caramel, feuillantine", price: "16€", image: restaurantSalle },
+      { name: "Soufflé au Chocolat Grand Cru", description: "Cœur coulant, glace vanille Bourbon", price: "18€", image: dessert1 },
+      { name: "Tarte Tatin Revisitée", description: "Caramel beurre salé, crème fraîche", price: "16€", image: dessert2 },
+      { name: "Crème Brûlée", description: "Vanille de Madagascar", price: "14€", image: dessert3 },
+      { name: "Paris-Brest", description: "Praliné noisette, chantilly", price: "17€", image: dessert1 },
+      { name: "Mousse au Citron", description: "Meringue italienne, zestes confits", price: "15€", image: dessert2 },
+      { name: "Mille-Feuille", description: "Vanille, caramel, feuillantine", price: "16€", image: dessert3 },
     ],
   };
 
