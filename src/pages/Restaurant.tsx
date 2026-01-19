@@ -206,31 +206,31 @@ const Restaurant = () => {
           <div 
             className="relative rounded-lg overflow-hidden mb-16 max-w-5xl mx-auto"
             style={{
-              backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url(${restaurantHero})`,
+              backgroundImage: `linear-gradient(to right, rgba(139,90,43,0.92), rgba(139,90,43,0.75)), url(${restaurantHero})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
             <div className="flex justify-between items-center p-8 md:p-12">
               <div>
-                <p className="text-primary-foreground/80 text-sm tracking-wider uppercase mb-2">
+                <p className="text-white/90 text-sm tracking-wider uppercase mb-2 font-medium">
                   {activeCategory === "Entrées" ? "Offre Spéciale Entrées" : activeCategory === "Plats" ? "Menu Dégustation" : "Douceurs du Chef"}
                 </p>
-                <h3 className="font-display text-3xl md:text-4xl text-primary-foreground mb-2">
-                  {activeCategory === "Entrées" ? "Menu Découverte 45€" : activeCategory === "Plats" ? "Menu Prestige 95€" : "Assiette Gourmande 28€"}
+                <h3 className="font-display text-3xl md:text-4xl text-white mb-2 drop-shadow-md">
+                  {activeCategory === "Entrées" ? "Menu Découverte 29 500 FCFA" : activeCategory === "Plats" ? "Menu Prestige 62 000 FCFA" : "Assiette Gourmande 18 500 FCFA"}
                 </h3>
-                <p className="text-primary-foreground/70 italic">
-                  {activeCategory === "Entrées" ? "3 entrées au choix, vin inclus" : activeCategory === "Plats" ? "Entrée, plat, dessert, accord mets & vins" : "Sélection de 3 desserts signature"}
+                <p className="text-white/80 italic">
+                  {activeCategory === "Entrées" ? "3 entrées au choix, boisson incluse" : activeCategory === "Plats" ? "Entrée, plat, dessert, accord mets & vins" : "Sélection de 3 desserts signature"}
                 </p>
-                <Button variant="elegant" className="mt-6">
+                <Button variant="elegant" className="mt-6 bg-white text-amber-900 hover:bg-white/90">
                   Voir le Menu
                 </Button>
               </div>
               <div className="hidden md:block text-right">
-                <p className="font-display text-accent italic text-xl">/// Du Lundi au Jeudi ///</p>
-                <p className="font-display text-primary-foreground text-4xl md:text-5xl font-bold tracking-wide">HAPPY</p>
-                <p className="font-display text-primary-foreground text-4xl md:text-5xl font-bold tracking-wide">HOUR</p>
-                <p className="text-accent italic mt-2">// 18h - 20h //</p>
+                <p className="font-display text-amber-200 italic text-xl drop-shadow">/// Du Lundi au Jeudi ///</p>
+                <p className="font-display text-white text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg">HAPPY</p>
+                <p className="font-display text-white text-4xl md:text-5xl font-bold tracking-wide drop-shadow-lg">HOUR</p>
+                <p className="text-amber-200 italic mt-2 drop-shadow">// 18h - 20h //</p>
               </div>
             </div>
           </div>
