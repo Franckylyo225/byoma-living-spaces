@@ -4,7 +4,7 @@ import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Clock, MapPin, Phone, Utensils, Wine, Leaf } from "lucide-react";
-
+import restaurantHero from "@/assets/restaurant-hero.jpg";
 const Restaurant = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -50,7 +50,7 @@ const Restaurant = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070')`,
+            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${restaurantHero})`,
           }}
         />
         <div className="relative z-10 text-center text-primary-foreground px-6">
