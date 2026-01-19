@@ -11,14 +11,14 @@ const TopBar = () => {
         </div>
         
         <div className="flex items-center gap-4 sm:gap-6">
-          <a href="tel:+33123456789" className="flex items-center gap-2 hover:text-accent transition-colors">
+          <a href="tel:+22507002552956" className="flex items-center gap-2 hover:text-accent transition-colors">
             <Phone className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">+33 1 23 45 67 89</span>
+            <span className="hidden sm:inline">+225 07 00 255 295</span>
             <span className="sm:hidden">Appeler</span>
           </a>
-          <a href="mailto:contact@byoma.fr" className="flex items-center gap-2 hover:text-accent transition-colors">
+          <a href="mailto:lesresidencesbyoma@byoma.ci" className="flex items-center gap-2 hover:text-accent transition-colors">
             <Mail className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">contact@byoma.fr</span>
+            <span className="hidden sm:inline">lesresidencesbyoma@byoma.ci</span>
             <span className="sm:hidden">Email</span>
           </a>
         </div>
