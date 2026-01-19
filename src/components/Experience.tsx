@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sparkles, Clock, Shield, Wifi, Coffee, Car } from "lucide-react";
+import { Sparkles, Clock, Shield, Wifi, Coffee, Car, UtensilsCrossed, Theater } from "lucide-react";
 
 const Experience = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -52,6 +52,16 @@ const Experience = () => {
       icon: Car,
       title: "Mobilité Facilitée",
       description: "Parking privé et service de voiturier sur demande.",
+    },
+    {
+      icon: UtensilsCrossed,
+      title: "Restaurant & Bar",
+      description: "Cuisine gastronomique et cocktails signature dans un cadre raffiné.",
+    },
+    {
+      icon: Theater,
+      title: "Salle de Spectacle",
+      description: "Événements culturels et soirées exclusives dans notre espace dédié.",
     },
   ];
 
