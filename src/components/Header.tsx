@@ -20,10 +20,9 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { href: isHomePage ? "#residences" : "/#residences", label: "Résidences", isExternal: !isHomePage },
-    { href: "/restaurant", label: "Restaurant", isExternal: true },
-    { href: isHomePage ? "#experience" : "/#experience", label: "Expérience", isExternal: !isHomePage },
-    { href: isHomePage ? "#services" : "/#services", label: "Services", isExternal: !isHomePage },
+    { href: "/", label: "Accueil", isExternal: true },
+    { href: isHomePage ? "#residences" : "/#residences", label: "Nos chambres & Suites", isExternal: !isHomePage },
+    { href: isHomePage ? "#about" : "/#about", label: "A Propos", isExternal: !isHomePage },
     { href: isHomePage ? "#contact" : "/#contact", label: "Contact", isExternal: !isHomePage },
   ];
 
