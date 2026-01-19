@@ -5,8 +5,9 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { 
   Utensils, 
-  TreePine, 
-  Palette, 
+  Users, 
+  PartyPopper, 
+  ShieldCheck, 
   Car, 
   Wifi, 
   Coffee, 
@@ -28,21 +29,26 @@ import suiteImage from "@/assets/residence-suite.jpg";
 import terraceImage from "@/assets/residence-terrace.jpg";
 import logoSignature from "@/assets/logo-signature.png";
 
-const localAmenities = [
+const hotelServices = [
   {
     icon: Utensils,
-    title: "Restaurants Locaux",
-    description: "Découvrez la richesse culinaire d'Abidjan avec nos recommandations de restaurants traditionnels et gastronomiques à proximité.",
+    title: "Restaurant BYOMA Signature",
+    description: "Savourez une cuisine gastronomique raffinée au cœur de notre établissement. Notre chef vous propose des créations culinaires alliant saveurs locales et influences internationales.",
   },
   {
-    icon: TreePine,
-    title: "Nature & Détente",
-    description: "Profitez des espaces verts environnants et des jardins paisibles pour des moments de sérénité absolue.",
+    icon: Users,
+    title: "Salle de Réunion",
+    description: "Un espace professionnel entièrement équipé pour vos réunions d'affaires, présentations et sessions de travail dans un cadre élégant et fonctionnel.",
   },
   {
-    icon: Palette,
-    title: "Art & Culture",
-    description: "Explorez les galeries d'art, musées et lieux culturels emblématiques de la capitale ivoirienne.",
+    icon: PartyPopper,
+    title: "Salle d'Événements & Réceptions",
+    description: "Célébrez vos moments importants dans notre salle de réception. Mariages, séminaires, anniversaires ou événements d'entreprise, nous vous offrons un cadre d'exception.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Sécurité Accrue",
+    description: "Votre tranquillité est notre priorité. Située à proximité immédiate du commissariat du 22ᵉ arrondissement, notre résidence bénéficie d'une sécurité renforcée 24h/24.",
   },
 ];
 
@@ -206,7 +212,7 @@ const APropos = () => {
         </div>
       </section>
 
-      {/* Local Amenities Section */}
+      {/* Hotel Services Section */}
       <section className="py-20 md:py-32 bg-secondary">
         <div className="container mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -216,26 +222,26 @@ const APropos = () => {
                 Résidences BYOMA
               </p>
               <h2 className="font-display text-4xl md:text-5xl text-foreground mb-8">
-                Découvrez les Alentours
+                Nos Services & Espaces
               </h2>
               <p className="text-muted-foreground text-lg leading-relaxed mb-10">
-                Idéalement situées à Cocody Plateau Dokui, nos résidences vous offrent 
-                un accès privilégié aux meilleures adresses d'Abidjan. Laissez-vous 
-                guider par nos recommandations locales.
+                Au-delà de l'hébergement, BYOMA vous offre une gamme complète de 
+                services et d'espaces pour répondre à tous vos besoins, qu'ils soient 
+                professionnels ou personnels.
               </p>
 
               <div className="space-y-8">
-                {localAmenities.map((amenity) => (
-                  <div key={amenity.title} className="flex gap-5">
+                {hotelServices.map((service) => (
+                  <div key={service.title} className="flex gap-5">
                     <div className="w-14 h-14 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <amenity.icon className="w-6 h-6 text-accent" />
+                      <service.icon className="w-6 h-6 text-accent" />
                     </div>
                     <div>
                       <h3 className="font-display text-xl text-foreground mb-2">
-                        {amenity.title}
+                        {service.title}
                       </h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        {amenity.description}
+                        {service.description}
                       </p>
                     </div>
                   </div>
