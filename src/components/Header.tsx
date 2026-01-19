@@ -22,6 +22,7 @@ const Header = () => {
   const navLinks = [
     { href: "/", label: "Accueil", isExternal: true },
     { href: isHomePage ? "#residences" : "/#residences", label: "Nos chambres & Suites", isExternal: !isHomePage },
+    { href: "/restaurant", label: "Restaurant", isExternal: true },
     { href: isHomePage ? "#about" : "/#about", label: "A Propos", isExternal: !isHomePage },
     { href: isHomePage ? "#contact" : "/#contact", label: "Contact", isExternal: !isHomePage },
   ];
