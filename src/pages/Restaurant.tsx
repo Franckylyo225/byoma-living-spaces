@@ -1,18 +1,64 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Clock, MapPin, Phone, Utensils, Wine, Leaf } from "lucide-react";
+import { Clock, MapPin, Phone, Utensils, Wine, Leaf, X, ChevronLeft, ChevronRight } from "lucide-react";
 import restaurantHero from "@/assets/restaurant-hero.jpg";
 import restaurantPlat from "@/assets/restaurant-plat.jpg";
 import restaurantSalle from "@/assets/restaurant-salle.jpg";
 import restaurantAmbiance from "@/assets/restaurant-ambiance.jpg";
 
+const galleryImages = [
+  { src: restaurantSalle, alt: "Salle du restaurant" },
+  { src: restaurantAmbiance, alt: "Ambiance du restaurant" },
+  { src: restaurantPlat, alt: "Service" },
+  { src: restaurantHero, alt: "Bar" },
+];
+
 const Restaurant = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Auto-slide carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => setLightboxOpen(false);
+
+  const nextImage = useCallback(() => {
+    setLightboxIndex((prev) => (prev + 1) % galleryImages.length);
+  }, []);
+
+  const prevImage = useCallback(() => {
+    setLightboxIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  }, []);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextImage();
+      if (e.key === "ArrowLeft") prevImage();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, nextImage, prevImage]);
 
   const menuHighlights = [
     {
@@ -153,28 +199,109 @@ const Restaurant = () => {
         </div>
       </section>
 
-      {/* Ambiance Gallery */}
+      {/* Ambiance Gallery Carousel */}
       <section className="py-20 bg-secondary/30">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-3 gap-4">
-            <img 
-              src={restaurantSalle}
-              alt="Salle du restaurant"
-              className="w-full h-80 object-cover rounded-sm"
-            />
-            <img 
-              src={restaurantAmbiance}
-              alt="Ambiance du restaurant"
-              className="w-full h-80 object-cover rounded-sm"
-            />
-            <img 
-              src={restaurantPlat}
-              alt="Service"
-              className="w-full h-80 object-cover rounded-sm"
-            />
+          <div className="text-center mb-12">
+            <p className="text-sm tracking-[0.2em] uppercase text-accent mb-4">Notre Ambiance</p>
+            <h2 className="font-display text-4xl md:text-5xl font-light text-foreground">
+              Galerie
+            </h2>
+          </div>
+          
+          {/* Main Carousel */}
+          <div className="relative max-w-4xl mx-auto mb-8">
+            <div className="overflow-hidden rounded-sm">
+              <div 
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+              >
+                {galleryImages.map((image, index) => (
+                  <div key={index} className="w-full flex-shrink-0">
+                    <img 
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-[500px] object-cover cursor-pointer hover:scale-105 transition-transform duration-500"
+                      onClick={() => openLightbox(index)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Slide Indicators */}
+            <div className="flex justify-center gap-2 mt-6">
+              {galleryImages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    currentSlide === index ? "bg-accent w-8" : "bg-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Thumbnails */}
+          <div className="grid grid-cols-4 gap-4 max-w-4xl mx-auto">
+            {galleryImages.map((image, index) => (
+              <img 
+                key={index}
+                src={image.src}
+                alt={image.alt}
+                className={`w-full h-24 object-cover rounded-sm cursor-pointer transition-all duration-300 ${
+                  currentSlide === index ? "ring-2 ring-accent opacity-100" : "opacity-60 hover:opacity-100"
+                }`}
+                onClick={() => {
+                  setCurrentSlide(index);
+                  openLightbox(index);
+                }}
+              />
+            ))}
           </div>
         </div>
       </section>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center animate-fade-in"
+          onClick={closeLightbox}
+        >
+          <button 
+            onClick={closeLightbox}
+            className="absolute top-6 right-6 text-white/80 hover:text-white transition-colors"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          
+          <button 
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            className="absolute left-6 text-white/80 hover:text-white transition-colors"
+          >
+            <ChevronLeft className="w-12 h-12" />
+          </button>
+          
+          <img 
+            src={galleryImages[lightboxIndex].src}
+            alt={galleryImages[lightboxIndex].alt}
+            className="max-w-[90vw] max-h-[90vh] object-contain animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          />
+          
+          <button 
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            className="absolute right-6 text-white/80 hover:text-white transition-colors"
+          >
+            <ChevronRight className="w-12 h-12" />
+          </button>
+          
+          <div className="absolute bottom-6 text-white/60 text-sm">
+            {lightboxIndex + 1} / {galleryImages.length}
+          </div>
+        </div>
+      )}
 
       {/* Practical Info */}
       <section className="py-20 md:py-32">
