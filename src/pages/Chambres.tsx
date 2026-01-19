@@ -7,7 +7,7 @@ import { Bed, Users, Maximize, Wifi, Car, Coffee, ArrowRight } from "lucide-reac
 import suiteImage from "@/assets/residence-suite.jpg";
 import loungeImage from "@/assets/residence-lounge.jpg";
 import terraceImage from "@/assets/residence-terrace.jpg";
-import heroResidence from "@/assets/hero-residence.jpg";
+import heroChambres from "@/assets/hero-chambres.jpg";
 
 const rooms = [
   {
@@ -61,7 +61,7 @@ const Chambres = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroResidence})`,
+            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroChambres})`,
           }}
         />
         <div className="relative z-10 text-center text-primary-foreground px-6">

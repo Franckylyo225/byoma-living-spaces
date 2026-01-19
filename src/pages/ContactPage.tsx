@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Phone, Mail, Send, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import heroResidence from "@/assets/hero-residence.jpg";
+import heroContact from "@/assets/hero-contact.jpg";
 
 const ContactPage = () => {
   const { toast } = useToast();
@@ -57,7 +57,7 @@ const ContactPage = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroResidence})`,
+            backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${heroContact})`,
           }}
         />
         <div className="relative z-10 text-center text-primary-foreground px-6">
