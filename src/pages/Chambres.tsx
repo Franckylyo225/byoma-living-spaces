@@ -3,39 +3,46 @@ import Header from "@/components/Header";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Bed, Users, Maximize, Wifi, Car, Coffee, ArrowRight } from "lucide-react";
-import suiteImage from "@/assets/residence-suite.jpg";
-import loungeImage from "@/assets/residence-lounge.jpg";
-import terraceImage from "@/assets/residence-terrace.jpg";
+import { Bed, Users, Maximize, Wifi, Car, Coffee, ArrowRight, Tv, Bath, Wind } from "lucide-react";
 import heroChambres from "@/assets/hero-chambres.jpg";
+// TODO: Remplacer par les vraies images une fois téléchargées
+import standardImage from "@/assets/residence-suite.jpg";
+import premiumImage from "@/assets/residence-lounge.jpg";
+import suiteImage from "@/assets/residence-terrace.jpg";
 
 const rooms = [
   {
-    image: suiteImage,
-    title: "Suite Prestige",
-    surface: "60 m²",
+    image: standardImage,
+    title: "Chambre Standard",
+    category: "Standard",
+    available: "10 chambres disponibles",
+    surface: "20 m²",
     capacity: "2 personnes",
-    description: "Un havre de paix avec chambre séparée, salon spacieux et terrasse privative offrant une vue panoramique sur la ville.",
-    amenities: ["Lit King Size", "Terrasse privée", "Salle de bain en marbre", "Mini-bar"],
-    price: "150 000 FCFA",
+    description: "Un espace confortable et fonctionnel, idéal pour un séjour reposant. Décoration soignée avec fresque artistique et équipements modernes.",
+    amenities: ["Lit Double", "Climatisation", "TV Écran Plat", "Salle de bain privée"],
+    price: "35 000 FCFA",
   },
   {
-    image: loungeImage,
-    title: "Appartement Élégance",
-    surface: "85 m²",
+    image: premiumImage,
+    title: "Chambre Premium",
+    category: "Premium",
+    available: "10 chambres disponibles",
+    surface: "30 m²",
+    capacity: "2 personnes",
+    description: "Un cadre élégant avec finitions haut de gamme, espace bureau et ambiance chaleureuse pour un confort optimal.",
+    amenities: ["Lit King Size", "Smart TV", "Coin bureau", "Mini-bar"],
+    price: "55 000 FCFA",
+  },
+  {
+    image: suiteImage,
+    title: "Suite",
+    category: "Suite",
+    available: "4 suites disponibles",
+    surface: "50 m²",
     capacity: "Jusqu'à 4 personnes",
-    description: "L'espace idéal pour les familles ou séjours prolongés avec cuisine équipée, salon confortable et deux chambres.",
-    amenities: ["2 Chambres", "Cuisine équipée", "Salon séparé", "Balcon"],
-    price: "220 000 FCFA",
-  },
-  {
-    image: terraceImage,
-    title: "Penthouse Signature",
-    surface: "120 m²",
-    capacity: "Jusqu'à 6 personnes",
-    description: "Notre joyau avec terrasse panoramique, jacuzzi privé et services de conciergerie dédiés pour une expérience unique.",
-    amenities: ["Rooftop exclusif", "Jacuzzi privé", "Conciergerie 24h/24", "Vue 360°"],
-    price: "350 000 FCFA",
+    description: "Notre offre premium avec salon séparé, cuisine équipée et espace de vie spacieux pour un séjour d'exception.",
+    amenities: ["Salon privé", "Cuisine équipée", "Bar américain", "Vue panoramique"],
+    price: "85 000 FCFA",
   },
 ];
 
@@ -107,13 +114,17 @@ const Chambres = () => {
                     alt={room.title}
                     className="w-full h-[400px] md:h-[500px] object-cover rounded-lg shadow-2xl"
                   />
-                  <div className="absolute top-6 right-6 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium">
-                    À partir de {room.price}/nuit
+                  <div className="absolute top-6 left-6 bg-accent text-accent-foreground px-4 py-2 rounded-full text-sm font-medium">
+                    {room.category}
+                  </div>
+                  <div className="absolute top-6 right-6 bg-foreground/90 text-background px-4 py-2 rounded-full text-sm font-medium">
+                    {room.price}/nuit
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className={index % 2 === 1 ? "lg:order-1" : ""}>
+                  <p className="text-accent text-sm tracking-widest uppercase mb-2">{room.available}</p>
                   <div className="flex items-center gap-6 mb-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-2">
                       <Maximize className="w-4 h-4" />
