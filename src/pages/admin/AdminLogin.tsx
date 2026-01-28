@@ -192,11 +192,7 @@ const AdminLogin = () => {
         
         {/* Content Overlay */}
         <div className="relative z-10 flex flex-col justify-between p-12 h-full">
-          <div className="flex items-center gap-3">
-            <img src={logoDark} alt="BYOMA" className="h-14 w-auto drop-shadow-lg" />
-            <div className="h-8 w-px bg-foreground/20" />
-            <span className="font-display text-lg text-foreground/80 tracking-wider">ADMINISTRATION</span>
-          </div>
+          <img src={logoDark} alt="BYOMA" className="h-20 w-auto drop-shadow-lg" />
           
           <div className="space-y-6">
             {slides.map((slide, index) => (
@@ -247,11 +243,9 @@ const AdminLogin = () => {
       <div className="w-full lg:w-1/2 xl:w-2/5 flex items-center justify-center p-6 sm:p-12 bg-card">
         <div className="w-full max-w-md space-y-8">
           {/* Mobile Logo */}
-          <div className="lg:hidden flex flex-col items-center gap-2 mb-8">
-            <img src={logoDark} alt="BYOMA" className="h-12" />
-            <span className="font-display text-xs text-muted-foreground tracking-widest uppercase">Administration</span>
+          <div className="lg:hidden flex justify-center mb-8">
+            <img src={logoDark} alt="BYOMA" className="h-16" />
           </div>
-
           <div className="text-center space-y-2">
             <h2 className="font-display text-3xl text-foreground">
               {isSignUp ? "Créer un compte" : "Bienvenue"}
