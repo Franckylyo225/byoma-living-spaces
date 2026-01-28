@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Bed, DoorOpen, Settings } from "lucide-react";
+import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface RoomType {
@@ -55,6 +55,8 @@ const Rooms = () => {
   const [isTypeDialogOpen, setIsTypeDialogOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [editingType, setEditingType] = useState<RoomType | null>(null);
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
   const { toast } = useToast();
 
   const [roomFormData, setRoomFormData] = useState({
@@ -260,6 +262,20 @@ const Rooms = () => {
     return rooms.filter(r => r.room_type_id === typeId).length;
   };
 
+  // Filtered rooms
+  const filteredRooms = rooms.filter(room => {
+    const matchesType = filterType === "all" || room.room_type_id === filterType;
+    const matchesStatus = filterStatus === "all" || room.status === filterStatus;
+    return matchesType && matchesStatus;
+  });
+
+  const hasActiveFilters = filterType !== "all" || filterStatus !== "all";
+
+  const clearFilters = () => {
+    setFilterType("all");
+    setFilterStatus("all");
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -299,6 +315,50 @@ const Rooms = () => {
 
         {/* Chambres individuelles */}
         <TabsContent value="rooms" className="space-y-4">
+          {/* Filtres */}
+          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between bg-muted/50 p-4 rounded-lg">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">Filtres:</span>
+              </div>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[160px] bg-background">
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les types</SelectItem>
+                  {roomTypes.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-[160px] bg-background">
+                  <SelectValue placeholder="Statut" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="available">Disponible</SelectItem>
+                  <SelectItem value="occupied">Occupée</SelectItem>
+                  <SelectItem value="maintenance">Maintenance</SelectItem>
+                  <SelectItem value="cleaning">Nettoyage</SelectItem>
+                </SelectContent>
+              </Select>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9">
+                  <X className="h-4 w-4 mr-1" />
+                  Effacer
+                </Button>
+              )}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {filteredRooms.length} chambre{filteredRooms.length > 1 ? "s" : ""} 
+              {hasActiveFilters && ` sur ${rooms.length}`}
+            </div>
+          </div>
           <div className="flex justify-end">
             <Dialog open={isRoomDialogOpen} onOpenChange={setIsRoomDialogOpen}>
               <DialogTrigger asChild>
@@ -401,9 +461,20 @@ const Rooms = () => {
                 Ajouter une chambre
               </Button>
             </Card>
+          ) : filteredRooms.length === 0 ? (
+            <Card className="p-8 text-center">
+              <Filter className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <h3 className="font-semibold mb-2">Aucune chambre trouvée</h3>
+              <p className="text-muted-foreground text-sm mb-4">
+                Aucune chambre ne correspond aux filtres sélectionnés
+              </p>
+              <Button variant="outline" onClick={clearFilters}>
+                Effacer les filtres
+              </Button>
+            </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {rooms.map((room) => (
+              {filteredRooms.map((room) => (
                 <Card key={room.id} className="hover:shadow-md transition-shadow">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
