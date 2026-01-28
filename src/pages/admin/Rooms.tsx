@@ -263,6 +263,11 @@ const Rooms = () => {
     return new Intl.NumberFormat("fr-FR").format(price) + " FCFA";
   };
 
+  const formatFloor = (floor: number | null) => {
+    if (floor === 0) return "RDC";
+    return `Étage ${floor || 1}`;
+  };
+
   const getRoomCountByType = (typeId: string) => {
     return rooms.filter(r => r.room_type_id === typeId).length;
   };
@@ -471,13 +476,22 @@ const Rooms = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="floor">Étage</Label>
-                      <Input
-                        id="floor"
-                        type="number"
-                        min="0"
-                        value={roomFormData.floor}
-                        onChange={(e) => setRoomFormData({ ...roomFormData, floor: parseInt(e.target.value) })}
-                      />
+                      <Select 
+                        value={roomFormData.floor.toString()} 
+                        onValueChange={(v) => setRoomFormData({ ...roomFormData, floor: parseInt(v) })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionner un étage" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">Rez-de-chaussée</SelectItem>
+                          <SelectItem value="1">1er étage</SelectItem>
+                          <SelectItem value="2">2ème étage</SelectItem>
+                          <SelectItem value="3">3ème étage</SelectItem>
+                          <SelectItem value="4">4ème étage</SelectItem>
+                          <SelectItem value="5">5ème étage</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="status">Statut</Label>
@@ -551,7 +565,7 @@ const Rooms = () => {
                         <div>
                           <CardTitle className="text-lg">{room.room_number}</CardTitle>
                           <p className="text-sm text-muted-foreground">
-                            Étage {room.floor || 1}
+                            {formatFloor(room.floor)}
                           </p>
                         </div>
                       </div>
@@ -659,7 +673,7 @@ const Rooms = () => {
                           <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
-                      <TableCell>{room.floor || 1}</TableCell>
+                      <TableCell>{room.floor === 0 ? "RDC" : room.floor || 1}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={statusColors[room.status]}>
                           {statusLabels[room.status]}
