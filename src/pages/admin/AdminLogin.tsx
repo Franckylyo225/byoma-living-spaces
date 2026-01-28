@@ -192,7 +192,7 @@ const AdminLogin = () => {
         
         {/* Content Overlay */}
         <div className="relative z-10 flex flex-col justify-between p-12 h-full">
-          <img src={logoDark} alt="BYOMA" className="h-20 w-auto drop-shadow-lg" />
+          <img src={logoDark} alt="BYOMA" className="max-h-16 w-auto object-contain" />
           
           <div className="space-y-6">
             {slides.map((slide, index) => (
@@ -244,7 +244,7 @@ const AdminLogin = () => {
         <div className="w-full max-w-md space-y-8">
           {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
-            <img src={logoDark} alt="BYOMA" className="h-16" />
+            <img src={logoDark} alt="BYOMA" className="max-h-12 w-auto object-contain" />
           </div>
           <div className="text-center space-y-2">
             <h2 className="font-display text-3xl text-foreground">
