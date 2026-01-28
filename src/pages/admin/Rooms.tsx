@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X } from "lucide-react";
+import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 interface RoomType {
   id: string;
@@ -57,6 +59,9 @@ const Rooms = () => {
   const [editingType, setEditingType] = useState<RoomType | null>(null);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [sortColumn, setSortColumn] = useState<string>("room_number");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const { toast } = useToast();
 
   const [roomFormData, setRoomFormData] = useState({
@@ -262,18 +267,69 @@ const Rooms = () => {
     return rooms.filter(r => r.room_type_id === typeId).length;
   };
 
-  // Filtered rooms
-  const filteredRooms = rooms.filter(room => {
-    const matchesType = filterType === "all" || room.room_type_id === filterType;
-    const matchesStatus = filterStatus === "all" || room.status === filterStatus;
-    return matchesType && matchesStatus;
-  });
+  // Filtered and sorted rooms
+  const filteredRooms = useMemo(() => {
+    let result = rooms.filter(room => {
+      const matchesType = filterType === "all" || room.room_type_id === filterType;
+      const matchesStatus = filterStatus === "all" || room.status === filterStatus;
+      return matchesType && matchesStatus;
+    });
+
+    // Sorting
+    result.sort((a, b) => {
+      let comparison = 0;
+      switch (sortColumn) {
+        case "room_number":
+          comparison = a.room_number.localeCompare(b.room_number, undefined, { numeric: true });
+          break;
+        case "type":
+          const typeA = a.room_type?.name || "";
+          const typeB = b.room_type?.name || "";
+          comparison = typeA.localeCompare(typeB);
+          break;
+        case "floor":
+          comparison = (a.floor || 0) - (b.floor || 0);
+          break;
+        case "status":
+          comparison = a.status.localeCompare(b.status);
+          break;
+        case "price":
+          const priceA = a.room_type?.base_price || 0;
+          const priceB = b.room_type?.base_price || 0;
+          comparison = priceA - priceB;
+          break;
+        default:
+          comparison = 0;
+      }
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+
+    return result;
+  }, [rooms, filterType, filterStatus, sortColumn, sortDirection]);
 
   const hasActiveFilters = filterType !== "all" || filterStatus !== "all";
 
   const clearFilters = () => {
     setFilterType("all");
     setFilterStatus("all");
+  };
+
+  const handleSort = (column: string) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const SortIcon = ({ column }: { column: string }) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="h-4 w-4 ml-1 opacity-50" />;
+    }
+    return sortDirection === "asc" 
+      ? <ArrowUp className="h-4 w-4 ml-1" /> 
+      : <ArrowDown className="h-4 w-4 ml-1" />;
   };
 
   if (isLoading) {
@@ -315,7 +371,7 @@ const Rooms = () => {
 
         {/* Chambres individuelles */}
         <TabsContent value="rooms" className="space-y-4">
-          {/* Filtres */}
+          {/* Filtres et contrôles */}
           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between bg-muted/50 p-4 rounded-lg">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center gap-2">
@@ -354,9 +410,19 @@ const Rooms = () => {
                 </Button>
               )}
             </div>
-            <div className="text-sm text-muted-foreground">
-              {filteredRooms.length} chambre{filteredRooms.length > 1 ? "s" : ""} 
-              {hasActiveFilters && ` sur ${rooms.length}`}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-muted-foreground">
+                {filteredRooms.length} chambre{filteredRooms.length > 1 ? "s" : ""} 
+                {hasActiveFilters && ` sur ${rooms.length}`}
+              </div>
+              <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as "grid" | "table")}>
+                <ToggleGroupItem value="grid" aria-label="Vue grille">
+                  <LayoutGrid className="h-4 w-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem value="table" aria-label="Vue tableau">
+                  <List className="h-4 w-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
           </div>
           <div className="flex justify-end">
@@ -472,7 +538,7 @@ const Rooms = () => {
                 Effacer les filtres
               </Button>
             </Card>
-          ) : (
+          ) : viewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredRooms.map((room) => (
                 <Card key={room.id} className="hover:shadow-md transition-shadow">
@@ -524,6 +590,99 @@ const Rooms = () => {
                 </Card>
               ))}
             </div>
+          ) : (
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleSort("room_number")}
+                    >
+                      <div className="flex items-center">
+                        Chambre
+                        <SortIcon column="room_number" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleSort("type")}
+                    >
+                      <div className="flex items-center">
+                        Type
+                        <SortIcon column="type" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleSort("floor")}
+                    >
+                      <div className="flex items-center">
+                        Étage
+                        <SortIcon column="floor" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors"
+                      onClick={() => handleSort("status")}
+                    >
+                      <div className="flex items-center">
+                        Statut
+                        <SortIcon column="status" />
+                      </div>
+                    </TableHead>
+                    <TableHead 
+                      className="cursor-pointer hover:bg-muted/50 transition-colors text-right"
+                      onClick={() => handleSort("price")}
+                    >
+                      <div className="flex items-center justify-end">
+                        Prix/nuit
+                        <SortIcon column="price" />
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredRooms.map((room) => (
+                    <TableRow key={room.id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <Bed className="h-4 w-4 text-accent" />
+                          {room.room_number}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {room.room_type ? (
+                          <Badge variant="secondary">{room.room_type.name}</Badge>
+                        ) : (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                      <TableCell>{room.floor || 1}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={statusColors[room.status]}>
+                          {statusLabels[room.status]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right font-semibold text-accent">
+                        {room.room_type ? formatPrice(room.room_type.base_price) : "-"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditRoom(room)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteRoom(room.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
           )}
         </TabsContent>
 
