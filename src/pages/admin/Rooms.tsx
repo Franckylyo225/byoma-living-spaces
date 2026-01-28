@@ -161,6 +161,16 @@ const Rooms = () => {
     }
   };
 
+  const handleQuickStatusChange = async (roomId: string, newStatus: Room["status"]) => {
+    const { error } = await supabase.from("rooms").update({ status: newStatus }).eq("id", roomId);
+    if (error) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message });
+    } else {
+      toast({ title: "Statut mis à jour", description: `Chambre passée en "${statusLabels[newStatus]}"` });
+      fetchData();
+    }
+  };
+
   const openNewRoomDialog = () => {
     setEditingRoom(null);
     setRoomFormData({
@@ -674,9 +684,28 @@ const Rooms = () => {
                       </TableCell>
                       <TableCell>{room.floor === 0 ? "RDC" : room.floor || 1}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className={statusColors[room.status]}>
-                          {statusLabels[room.status]}
-                        </Badge>
+                        <Select 
+                          value={room.status} 
+                          onValueChange={(v) => handleQuickStatusChange(room.id, v as Room["status"])}
+                        >
+                          <SelectTrigger className={`w-[140px] h-8 text-xs ${statusColors[room.status]}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="available">
+                              <span className="text-green-600">Disponible</span>
+                            </SelectItem>
+                            <SelectItem value="occupied">
+                              <span className="text-red-600">Occupée</span>
+                            </SelectItem>
+                            <SelectItem value="maintenance">
+                              <span className="text-yellow-600">Maintenance</span>
+                            </SelectItem>
+                            <SelectItem value="cleaning">
+                              <span className="text-blue-600">Nettoyage</span>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </TableCell>
                       <TableCell className="text-right font-semibold text-accent">
                         {room.room_type ? formatPrice(room.room_type.base_price) : "-"}
