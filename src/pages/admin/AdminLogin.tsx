@@ -4,14 +4,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import logoDark from "@/assets/logo-byoma-dark.png";
 
 const AdminLogin = () => {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -30,7 +33,6 @@ const AdminLogin = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Check if user has admin or employee role
         const { data: profile } = await supabase
           .from("profiles")
           .select("role, department")
@@ -63,6 +65,85 @@ const AdminLogin = () => {
     }
   };
 
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Les mots de passe ne correspondent pas",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Le mot de passe doit contenir au moins 6 caractères",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/admin`,
+        },
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Create profile with admin role
+        const { error: profileError } = await supabase.from("profiles").insert({
+          user_id: authData.user.id,
+          full_name: fullName,
+          role: "admin" as const,
+        });
+
+        if (profileError) throw profileError;
+
+        // Create user role
+        const { error: roleError } = await supabase.from("user_roles").insert({
+          user_id: authData.user.id,
+          role: "admin" as const,
+        });
+
+        if (roleError) throw roleError;
+
+        toast({
+          title: "Inscription réussie",
+          description: "Votre compte administrateur a été créé. Vous pouvez maintenant vous connecter.",
+        });
+        
+        setIsSignUp(false);
+        setPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue lors de l'inscription",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setFullName("");
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-secondary/30 px-4">
       <Card className="w-full max-w-md">
@@ -70,13 +151,35 @@ const AdminLogin = () => {
           <div className="flex justify-center">
             <img src={logoDark} alt="BYOMA" className="h-12" />
           </div>
-          <CardTitle className="font-display text-2xl">Administration</CardTitle>
+          <CardTitle className="font-display text-2xl">
+            {isSignUp ? "Créer un compte" : "Administration"}
+          </CardTitle>
           <CardDescription>
-            Connectez-vous pour accéder à l'espace de gestion
+            {isSignUp 
+              ? "Inscrivez-vous pour créer un compte administrateur"
+              : "Connectez-vous pour accéder à l'espace de gestion"
+            }
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-4">
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Nom complet</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Jean Dupont"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -114,11 +217,46 @@ const AdminLogin = () => {
                 </button>
               </div>
             </div>
+            {isSignUp && (
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10 pr-10"
+                    required
+                  />
+                </div>
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Connexion..." : "Se connecter"}
+              {isLoading 
+                ? (isSignUp ? "Inscription..." : "Connexion...") 
+                : (isSignUp ? "S'inscrire" : "Se connecter")
+              }
             </Button>
           </form>
         </CardContent>
+        <CardFooter className="flex justify-center">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              resetForm();
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {isSignUp 
+              ? "Déjà un compte ? Se connecter"
+              : "Pas encore de compte ? S'inscrire"
+            }
+          </button>
+        </CardFooter>
       </Card>
     </div>
   );
