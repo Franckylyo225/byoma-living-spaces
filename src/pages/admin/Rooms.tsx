@@ -489,7 +489,6 @@ const Rooms = () => {
                           <SelectItem value="2">2ème étage</SelectItem>
                           <SelectItem value="3">3ème étage</SelectItem>
                           <SelectItem value="4">4ème étage</SelectItem>
-                          <SelectItem value="5">5ème étage</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
