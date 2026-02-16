@@ -1,11 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bed, Users, Loader2 } from "lucide-react";
+import { ArrowRight, Bed, Users, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import suiteImage from "@/assets/residence-suite.jpg";
 import loungeImage from "@/assets/residence-lounge.jpg";
 import terraceImage from "@/assets/residence-terrace.jpg";
+
+interface RoomTypeImage {
+  id: string;
+  image_url: string;
+  display_order: number;
+}
 
 interface RoomType {
   id: string;
@@ -22,11 +28,48 @@ const fallbackImages = [suiteImage, loungeImage, terraceImage];
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("fr-FR").format(price) + " FCFA";
 
+const ImageCarousel = ({ images, fallback, alt }: { images: RoomTypeImage[]; fallback: string; alt: string }) => {
+  const [current, setCurrent] = useState(0);
+  const allImages = images.length > 0 ? images.map(i => i.image_url) : [fallback];
+
+  if (allImages.length <= 1) {
+    return <img src={allImages[0]} alt={alt} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />;
+  }
+
+  return (
+    <div className="relative w-full h-full">
+      <img src={allImages[current]} alt={`${alt} ${current + 1}`} className="w-full h-full object-cover transition-all duration-500" />
+      <button
+        onClick={(e) => { e.stopPropagation(); setCurrent((current - 1 + allImages.length) % allImages.length); }}
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <button
+        onClick={(e) => { e.stopPropagation(); setCurrent((current + 1) % allImages.length); }}
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 backdrop-blur-sm rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
+      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+        {allImages.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={(e) => { e.stopPropagation(); setCurrent(idx); }}
+            className={`w-2 h-2 rounded-full transition-all ${idx === current ? "bg-background w-4" : "bg-background/50"}`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const Residences = () => {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
+  const [roomTypeImages, setRoomTypeImages] = useState<Record<string, RoomTypeImage[]>>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,15 +84,22 @@ const Residences = () => {
   }, []);
 
   useEffect(() => {
-    const fetchRoomTypes = async () => {
-      const { data } = await supabase
-        .from("room_types")
-        .select("id, name, description, capacity, base_price, total_rooms, image_url")
-        .order("base_price", { ascending: true });
-      setRoomTypes(data || []);
+    const fetchData = async () => {
+      const [typesRes, imagesRes] = await Promise.all([
+        supabase.from("room_types").select("id, name, description, capacity, base_price, total_rooms, image_url").order("base_price", { ascending: true }),
+        supabase.from("room_type_images").select("*").order("display_order", { ascending: true }),
+      ]);
+      setRoomTypes(typesRes.data || []);
+      // Group images by room_type_id
+      const grouped: Record<string, RoomTypeImage[]> = {};
+      (imagesRes.data || []).forEach((img: any) => {
+        if (!grouped[img.room_type_id]) grouped[img.room_type_id] = [];
+        grouped[img.room_type_id].push(img);
+      });
+      setRoomTypeImages(grouped);
       setIsLoading(false);
     };
-    fetchRoomTypes();
+    fetchData();
   }, []);
 
   return (
@@ -96,14 +146,14 @@ const Residences = () => {
                 }`}
                 style={{ animationDelay: `${(index + 1) * 150}ms` }}
               >
-                {/* Image */}
+                {/* Image Carousel */}
                 <div className="relative h-80 overflow-hidden">
-                  <img
-                    src={type.image_url || fallbackImages[index % fallbackImages.length]}
+                  <ImageCarousel
+                    images={roomTypeImages[type.id] || []}
+                    fallback={type.image_url || fallbackImages[index % fallbackImages.length]}
                     alt={type.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-500" />
+                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-500 pointer-events-none" />
                 </div>
 
                 {/* Content */}
