@@ -73,6 +73,7 @@ const Header = () => {
           <Button
             variant={isScrolled ? "elegant" : "hero"}
             size="sm"
+            onClick={() => window.location.href = "/chambres"}
           >
             Réserver
           </Button>
@@ -119,7 +120,7 @@ const Header = () => {
                 </a>
               )
             ))}
-            <Button variant="elegant" size="lg" className="mt-4">
+            <Button variant="elegant" size="lg" className="mt-4" onClick={() => { setIsMobileMenuOpen(false); window.location.href = "/chambres"; }}>
               Réserver
             </Button>
           </nav>
