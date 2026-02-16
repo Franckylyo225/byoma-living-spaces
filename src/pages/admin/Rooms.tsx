@@ -990,8 +990,8 @@ const Rooms = () => {
                             <div className="flex items-center justify-between">
                               <Label>Photos de la chambre ({typeImages.length})</Label>
                             </div>
-                            <div className="grid grid-cols-5 gap-1.5">
-                              {Array.from({ length: 10 }).map((_, idx) => {
+                            <div className="grid grid-cols-4 gap-1.5 w-full overflow-hidden">
+                              {Array.from({ length: 12 }).map((_, idx) => {
                                 const img = typeImages[idx];
                                 return (
                                   <div
