@@ -255,26 +255,34 @@ const APropos = () => {
 
             {/* Images Grid */}
             <div className="grid grid-cols-2 gap-4">
-              <img 
-                src={aproposRestaurant} 
-                alt="Restaurant & Bar BYOMA" 
-                className="w-full h-64 object-cover rounded-lg shadow-lg col-span-2"
-              />
-              <img 
-                src={aproposConference} 
-                alt="Salle de conférence BYOMA" 
-                className="w-full h-48 object-cover rounded-lg shadow-lg"
-              />
-              <img 
-                src={aproposReunion} 
-                alt="Salle de réunion BYOMA" 
-                className="w-full h-48 object-cover rounded-lg shadow-lg"
-              />
-              <img 
-                src={aproposAccueil} 
-                alt="Accueil BYOMA" 
-                className="w-full h-48 object-cover rounded-lg shadow-lg col-span-2"
-              />
+              <div className="overflow-hidden rounded-lg shadow-lg col-span-2">
+                <img 
+                  src={aproposRestaurant} 
+                  alt="Restaurant & Bar BYOMA" 
+                  className="w-full h-64 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg shadow-lg">
+                <img 
+                  src={aproposConference} 
+                  alt="Salle de conférence BYOMA" 
+                  className="w-full h-48 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg shadow-lg">
+                <img 
+                  src={aproposReunion} 
+                  alt="Salle de réunion BYOMA" 
+                  className="w-full h-48 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                />
+              </div>
+              <div className="overflow-hidden rounded-lg shadow-lg col-span-2">
+                <img 
+                  src={aproposAccueil} 
+                  alt="Accueil BYOMA" 
+                  className="w-full h-48 object-cover transition-transform duration-500 ease-out hover:scale-110"
+                />
+              </div>
             </div>
           </div>
         </div>
