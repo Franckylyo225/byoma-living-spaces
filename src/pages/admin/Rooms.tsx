@@ -78,6 +78,7 @@ const Rooms = () => {
     capacity: 2,
     base_price: 0,
     amenities: "",
+    image_url: "",
   });
 
   const fetchData = async () => {
@@ -195,6 +196,7 @@ const Rooms = () => {
       base_price: typeFormData.base_price,
       total_rooms: rooms.filter(r => r.room_type_id === editingType?.id).length || 0,
       amenities: amenitiesArray,
+      image_url: typeFormData.image_url || null,
     };
 
     if (editingType) {
@@ -233,6 +235,7 @@ const Rooms = () => {
       capacity: type.capacity,
       base_price: type.base_price,
       amenities: amenitiesArray.join(", "),
+      image_url: type.image_url || "",
     });
     setIsTypeDialogOpen(true);
   };
@@ -265,6 +268,7 @@ const Rooms = () => {
       capacity: 2,
       base_price: 0,
       amenities: "",
+      image_url: "",
     });
     setIsTypeDialogOpen(true);
   };
@@ -798,6 +802,23 @@ const Rooms = () => {
                       rows={2}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="type_image_url">URL de l'image</Label>
+                    <Input
+                      id="type_image_url"
+                      value={typeFormData.image_url}
+                      onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
+                      placeholder="https://exemple.com/photo.jpg"
+                    />
+                    {typeFormData.image_url && (
+                      <img 
+                        src={typeFormData.image_url} 
+                        alt="Aperçu" 
+                        className="w-full h-32 object-cover rounded-md border"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
                   <Button type="submit" className="w-full">
                     {editingType ? "Modifier" : "Créer"}
                   </Button>
@@ -821,7 +842,14 @@ const Rooms = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {roomTypes.map((type) => (
-                <Card key={type.id} className="hover:shadow-md transition-shadow">
+                <Card key={type.id} className="hover:shadow-md transition-shadow overflow-hidden">
+                  {type.image_url && (
+                    <img 
+                      src={type.image_url} 
+                      alt={type.name} 
+                      className="w-full h-40 object-cover"
+                    />
+                  )}
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
