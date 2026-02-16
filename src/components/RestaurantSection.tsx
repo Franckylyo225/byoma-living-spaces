@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, UtensilsCrossed, Wine, Clock } from "lucide-react";
-import restaurantImage from "@/assets/restaurant-ambiance.jpg";
+import restaurant1 from "@/assets/restaurant-1.jpg";
+import restaurant2 from "@/assets/restaurant-2.jpg";
+import restaurant3 from "@/assets/restaurant-3.jpg";
+import restaurant4 from "@/assets/restaurant-4.jpg";
+
+const slides = [restaurant1, restaurant2, restaurant3, restaurant4];
 
 const RestaurantSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,6 +29,14 @@ const RestaurantSection = () => {
     }
 
     return () => observer.disconnect();
+  }, []);
+
+  // Auto-advance slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   const features = [
@@ -53,17 +67,39 @@ const RestaurantSection = () => {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Image */}
           <div className={`relative ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}>
-            <div className="relative overflow-hidden rounded-lg">
-              <img
-                src={restaurantImage}
-                alt="Restaurant BYOMA Signature"
-                className="w-full h-[500px] md:h-[600px] object-cover"
-              />
+            <div className="relative overflow-hidden rounded-lg h-[500px] md:h-[600px]">
+              {slides.map((slide, index) => (
+                <div
+                  key={index}
+                  className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+                  style={{ opacity: currentSlide === index ? 1 : 0 }}
+                >
+                  <img
+                    src={slide}
+                    alt={`Restaurant BYOMA ${index + 1}`}
+                    className={`w-full h-full object-cover transition-transform duration-[8000ms] ease-out ${
+                      currentSlide === index ? "scale-110" : "scale-100"
+                    }`}
+                  />
+                </div>
+              ))}
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />
+              {/* Slide indicators */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      currentSlide === idx ? "bg-accent w-6" : "bg-background/60"
+                    }`}
+                  />
+                ))}
+              </div>
             </div>
             
             {/* Floating Badge */}
-            <div className="absolute -bottom-6 -right-6 md:right-8 bg-accent text-accent-foreground p-6 md:p-8 rounded-lg shadow-elegant">
+            <div className="absolute -bottom-6 -right-6 md:right-8 bg-accent text-accent-foreground p-6 md:p-8 rounded-lg shadow-elegant z-10">
               <p className="font-display text-3xl md:text-4xl">BYOMA</p>
               <p className="text-sm tracking-luxury uppercase">Signature</p>
             </div>
