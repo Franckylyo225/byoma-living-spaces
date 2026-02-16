@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Calendar, User, Phone, Mail } from "lucide-react";
+import { Plus, Search, Calendar, User, Phone, Mail, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import ReservationDetailDialog from "@/components/admin/ReservationDetailDialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -73,6 +74,7 @@ const Reservations = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -346,6 +348,10 @@ const Reservations = () => {
                     {res.total_price && (
                       <span className="font-semibold text-accent">{formatPrice(res.total_price)}</span>
                     )}
+                    <Button variant="outline" size="sm" onClick={() => setSelectedReservation(res)}>
+                      <Eye className="h-4 w-4 mr-1" />
+                      Détails
+                    </Button>
                     <Select value={res.status} onValueChange={(v: "pending" | "confirmed" | "checked_in" | "checked_out" | "cancelled") => updateStatus(res.id, v)}>
                       <SelectTrigger className="w-32">
                         <SelectValue />
@@ -365,6 +371,12 @@ const Reservations = () => {
           ))
         )}
       </div>
+
+      <ReservationDetailDialog
+        reservation={selectedReservation}
+        open={!!selectedReservation}
+        onOpenChange={(open) => !open && setSelectedReservation(null)}
+      />
     </div>
   );
 };
