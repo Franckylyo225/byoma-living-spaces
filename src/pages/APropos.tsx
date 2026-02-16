@@ -199,18 +199,6 @@ const APropos = () => {
                   unique et personnalisée.
                 </p>
               </div>
-              
-              {/* Signature */}
-              <div className="mt-10 pt-8 border-t border-border">
-                <img 
-                  src={logoSignature} 
-                  alt="Signature" 
-                  className="h-16 mb-4 opacity-80"
-                />
-                <p className="font-display text-xl italic text-foreground">
-                  L'équipe BYOMA
-                </p>
-              </div>
             </div>
           </div>
         </div>
