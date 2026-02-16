@@ -77,7 +77,9 @@ const SpectacleSection = () => {
           <img
             src={slide}
             alt=""
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover transition-transform duration-[8000ms] ease-out ${
+              currentSlide === index ? "scale-110" : "scale-100"
+            }`}
           />
         </div>
       ))}
