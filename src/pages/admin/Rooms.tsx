@@ -970,42 +970,45 @@ const Rooms = () => {
                             <div className="flex items-center justify-between">
                               <Label>Photos de la chambre ({typeImages.length})</Label>
                             </div>
-                            {typeImages.length === 0 ? (
-                              <div className="flex flex-col items-center justify-center h-40 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/30 gap-2">
-                                <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
-                                <p className="text-sm text-muted-foreground">Aucune photo ajoutée</p>
-                              </div>
-                            ) : (
-                              <div className="grid grid-cols-4 gap-1.5 max-h-[200px] overflow-y-auto pr-1">
-                                {typeImages.map((img, idx) => (
-                                  <div key={img.id} className="relative group rounded-lg overflow-hidden border bg-muted aspect-[4/3]">
-                                    <img 
-                                      src={img.image_url} 
-                                      alt={`Photo ${idx + 1}`} 
-                                      className="w-full h-full object-cover"
-                                      onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
-                                    />
-                                    {idx === 0 && (
-                                      <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground text-[10px]">
-                                        Principale
-                                      </Badge>
+                            <div className="grid grid-cols-5 gap-1.5">
+                              {Array.from({ length: 10 }).map((_, idx) => {
+                                const img = typeImages[idx];
+                                return (
+                                  <div key={idx} className="relative group rounded-lg overflow-hidden border bg-muted aspect-square">
+                                    {img ? (
+                                      <>
+                                        <img 
+                                          src={img.image_url} 
+                                          alt={`Photo ${idx + 1}`} 
+                                          className="w-full h-full object-cover"
+                                          onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
+                                        />
+                                        {idx === 0 && (
+                                          <Badge className="absolute top-1 left-1 bg-accent text-accent-foreground text-[9px] px-1 py-0">
+                                            1ère
+                                          </Badge>
+                                        )}
+                                        <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
+                                          <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity h-6 text-[10px] px-2"
+                                            onClick={() => handleDeleteImage(img.id)}
+                                          >
+                                            <Trash2 className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      </>
+                                    ) : (
+                                      <div className="w-full h-full flex items-center justify-center">
+                                        <ImageIcon className="h-4 w-4 text-muted-foreground/30" />
+                                      </div>
                                     )}
-                                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
-                                      <Button
-                                        type="button"
-                                        variant="destructive"
-                                        size="sm"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity h-8"
-                                        onClick={() => handleDeleteImage(img.id)}
-                                      >
-                                        <Trash2 className="h-3.5 w-3.5 mr-1" />
-                                        Supprimer
-                                      </Button>
-                                    </div>
                                   </div>
-                                ))}
-                              </div>
-                            )}
+                                );
+                              })}
+                            </div>
                           </div>
 
                           {/* Ajouter des images */}
@@ -1075,26 +1078,6 @@ const Rooms = () => {
                             </p>
                           </div>
 
-                          {/* Aperçu en ligne */}
-                          {typeImages.length > 0 && typeFormData.name && (
-                            <div className="space-y-3 pt-4 border-t">
-                              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                                <Eye className="h-4 w-4" />
-                                Aperçu galerie (site public)
-                              </div>
-                              <div className="flex gap-2 overflow-x-auto pb-2">
-                                {typeImages.map((img, idx) => (
-                                  <img
-                                    key={img.id}
-                                    src={img.image_url}
-                                    alt={`Aperçu ${idx + 1}`}
-                                    className="h-24 w-36 object-cover rounded-md border flex-shrink-0"
-                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </>
                       )}
                     </TabsContent>
