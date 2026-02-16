@@ -14,6 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+interface RoomTypeImage {
+  id: string;
+  room_type_id: string;
+  image_url: string;
+  display_order: number;
+  caption: string | null;
+}
+
 interface RoomType {
   id: string;
   name: string;
@@ -62,6 +70,8 @@ const Rooms = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [sortColumn, setSortColumn] = useState<string>("room_number");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [typeImages, setTypeImages] = useState<RoomTypeImage[]>([]);
+  const [newImageUrl, setNewImageUrl] = useState("");
   const { toast } = useToast();
 
   const [roomFormData, setRoomFormData] = useState({
@@ -226,7 +236,7 @@ const Rooms = () => {
     return [];
   };
 
-  const handleEditType = (type: RoomType) => {
+  const handleEditType = async (type: RoomType) => {
     setEditingType(type);
     const amenitiesArray = getAmenitiesArray(type.amenities);
     setTypeFormData({
@@ -237,6 +247,14 @@ const Rooms = () => {
       amenities: amenitiesArray.join(", "),
       image_url: type.image_url || "",
     });
+    // Fetch images for this type
+    const { data } = await supabase
+      .from("room_type_images")
+      .select("*")
+      .eq("room_type_id", type.id)
+      .order("display_order", { ascending: true });
+    setTypeImages(data || []);
+    setNewImageUrl("");
     setIsTypeDialogOpen(true);
   };
 
@@ -270,7 +288,53 @@ const Rooms = () => {
       amenities: "",
       image_url: "",
     });
+    setTypeImages([]);
+    setNewImageUrl("");
     setIsTypeDialogOpen(true);
+  };
+
+  const handleAddImage = async () => {
+    if (!newImageUrl.trim() || !editingType) return;
+    const maxOrder = typeImages.length > 0 ? Math.max(...typeImages.map(i => i.display_order)) + 1 : 0;
+    const { data, error } = await supabase
+      .from("room_type_images")
+      .insert({
+        room_type_id: editingType.id,
+        image_url: newImageUrl.trim(),
+        display_order: maxOrder,
+      })
+      .select()
+      .single();
+    if (error) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message });
+    } else if (data) {
+      setTypeImages([...typeImages, data]);
+      setNewImageUrl("");
+      // Set as main image if first one
+      if (typeImages.length === 0) {
+        await supabase.from("room_types").update({ image_url: newImageUrl.trim() }).eq("id", editingType.id);
+        setTypeFormData({ ...typeFormData, image_url: newImageUrl.trim() });
+      }
+      toast({ title: "Image ajoutée" });
+    }
+  };
+
+  const handleDeleteImage = async (imageId: string) => {
+    const { error } = await supabase.from("room_type_images").delete().eq("id", imageId);
+    if (error) {
+      toast({ variant: "destructive", title: "Erreur", description: error.message });
+    } else {
+      const remaining = typeImages.filter(i => i.id !== imageId);
+      setTypeImages(remaining);
+      // Update main image_url if needed
+      if (editingType) {
+        const newMainUrl = remaining.length > 0 ? remaining[0].image_url : null;
+        await supabase.from("room_types").update({ image_url: newMainUrl }).eq("id", editingType.id);
+        setTypeFormData({ ...typeFormData, image_url: newMainUrl || "" });
+        fetchData();
+      }
+      toast({ title: "Image supprimée" });
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -839,91 +903,103 @@ const Rooms = () => {
 
                     {/* Onglet Images */}
                     <TabsContent value="images" className="space-y-5 mt-0">
-                      <div className="space-y-3">
-                        <Label>Photo principale</Label>
-                        <div className="relative w-full h-56 rounded-lg border-2 border-dashed border-muted-foreground/25 overflow-hidden bg-muted/30">
-                          {typeFormData.image_url ? (
-                            <>
-                              <img 
-                                src={typeFormData.image_url} 
-                                alt="Aperçu" 
-                                className="w-full h-full object-cover"
-                                onError={(e) => { 
-                                  (e.target as HTMLImageElement).style.display = 'none';
-                                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                                }}
-                              />
-                              <div className="hidden absolute inset-0 flex items-center justify-center bg-muted/50">
-                                <div className="text-center">
-                                  <AlertCircle className="h-8 w-8 mx-auto text-destructive mb-2" />
-                                  <p className="text-sm text-destructive font-medium">URL invalide</p>
-                                </div>
+                      {!editingType ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <ImageIcon className="h-10 w-10 mx-auto mb-3 opacity-40" />
+                          <p className="text-sm">Créez d'abord le type, puis ajoutez des images en le modifiant.</p>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Galerie d'images existantes */}
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <Label>Photos de la chambre ({typeImages.length})</Label>
+                            </div>
+                            {typeImages.length === 0 ? (
+                              <div className="flex flex-col items-center justify-center h-40 rounded-lg border-2 border-dashed border-muted-foreground/25 bg-muted/30 gap-2">
+                                <ImageIcon className="h-10 w-10 text-muted-foreground/40" />
+                                <p className="text-sm text-muted-foreground">Aucune photo ajoutée</p>
                               </div>
+                            ) : (
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {typeImages.map((img, idx) => (
+                                  <div key={img.id} className="relative group rounded-lg overflow-hidden border bg-muted aspect-[4/3]">
+                                    <img 
+                                      src={img.image_url} 
+                                      alt={`Photo ${idx + 1}`} 
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
+                                    />
+                                    {idx === 0 && (
+                                      <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground text-[10px]">
+                                        Principale
+                                      </Badge>
+                                    )}
+                                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
+                                      <Button
+                                        type="button"
+                                        variant="destructive"
+                                        size="sm"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity h-8"
+                                        onClick={() => handleDeleteImage(img.id)}
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5 mr-1" />
+                                        Supprimer
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Ajouter une image */}
+                          <div className="space-y-2 pt-3 border-t">
+                            <Label>Ajouter une photo</Label>
+                            <div className="flex gap-2">
+                              <Input
+                                value={newImageUrl}
+                                onChange={(e) => setNewImageUrl(e.target.value)}
+                                placeholder="https://exemple.com/photo-chambre.jpg"
+                                className="flex-1"
+                              />
                               <Button
                                 type="button"
-                                variant="destructive"
-                                size="sm"
-                                className="absolute top-3 right-3 h-8"
-                                onClick={() => setTypeFormData({ ...typeFormData, image_url: "" })}
+                                variant="outline"
+                                onClick={handleAddImage}
+                                disabled={!newImageUrl.trim()}
                               >
-                                <Trash2 className="h-3.5 w-3.5 mr-1" />
-                                Retirer
+                                <Plus className="h-4 w-4 mr-1" />
+                                Ajouter
                               </Button>
-                            </>
-                          ) : (
-                            <div className="flex flex-col items-center justify-center h-full gap-3">
-                              <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
-                              <div className="text-center">
-                                <p className="text-sm font-medium text-muted-foreground">Aucune photo</p>
-                                <p className="text-xs text-muted-foreground/70 mt-1">Collez une URL d'image ci-dessous</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              La première image sera utilisée comme photo principale sur le site.
+                              Ajoutez plusieurs photos pour montrer la chambre sous tous les angles.
+                            </p>
+                          </div>
+
+                          {/* Aperçu en ligne */}
+                          {typeImages.length > 0 && typeFormData.name && (
+                            <div className="space-y-3 pt-4 border-t">
+                              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                <Eye className="h-4 w-4" />
+                                Aperçu galerie (site public)
+                              </div>
+                              <div className="flex gap-2 overflow-x-auto pb-2">
+                                {typeImages.map((img, idx) => (
+                                  <img
+                                    key={img.id}
+                                    src={img.image_url}
+                                    alt={`Aperçu ${idx + 1}`}
+                                    className="h-24 w-36 object-cover rounded-md border flex-shrink-0"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                  />
+                                ))}
                               </div>
                             </div>
                           )}
-                        </div>
-                        <Input
-                          id="type_image_url"
-                          value={typeFormData.image_url}
-                          onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
-                          placeholder="https://exemple.com/photo-chambre.jpg"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Cette image sera affichée sur la page d'accueil et la page de réservation.
-                          Utilisez une image de bonne qualité (min. 800×600px).
-                        </p>
-                      </div>
-
-                      {/* Live preview */}
-                      {typeFormData.name && (
-                        <div className="space-y-3 pt-4 border-t">
-                          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                            <Eye className="h-4 w-4" />
-                            Aperçu tel qu'affiché sur le site
-                          </div>
-                          <div className="rounded-lg border overflow-hidden bg-background shadow-sm max-w-sm mx-auto">
-                            <div className="relative h-40 bg-muted">
-                              {typeFormData.image_url ? (
-                                <img src={typeFormData.image_url} alt="" className="w-full h-full object-cover" 
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                              ) : (
-                                <div className="flex items-center justify-center h-full">
-                                  <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="p-4">
-                              <h4 className="font-semibold">{typeFormData.name}</h4>
-                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{typeFormData.description || "Aucune description"}</p>
-                              <div className="flex items-center justify-between mt-3">
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Users className="h-3 w-3" /> {typeFormData.capacity} pers.
-                                </span>
-                                <span className="font-semibold text-sm text-accent">
-                                  {typeFormData.base_price > 0 ? formatPrice(typeFormData.base_price) + "/nuit" : "—"}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        </>
                       )}
                     </TabsContent>
                   </Tabs>

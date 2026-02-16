@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Bed, Users, Maximize, Wifi, Car, Coffee, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { Bed, Users, Maximize, Wifi, Car, Coffee, ArrowRight, CheckCircle, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import heroChambres from "@/assets/hero-chambres.jpg";
+
+interface RoomTypeImage {
+  id: string;
+  image_url: string;
+  display_order: number;
+}
 
 interface RoomType {
   id: string;
@@ -41,11 +47,70 @@ const getAmenitiesArray = (amenities: unknown): string[] => {
   return [];
 };
 
+const ImageGallery = ({ images, mainImage }: { images: RoomTypeImage[]; mainImage: string | null }) => {
+  const [current, setCurrent] = useState(0);
+  const allImages = images.length > 0 ? images.map(i => i.image_url) : mainImage ? [mainImage] : [];
+
+  if (allImages.length === 0) {
+    return (
+      <div className="w-full h-[400px] md:h-[500px] bg-secondary rounded-lg shadow-2xl flex items-center justify-center">
+        <Bed className="w-16 h-16 text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full h-[400px] md:h-[500px] rounded-lg shadow-2xl overflow-hidden group">
+      <img src={allImages[current]} alt="" className="w-full h-full object-cover transition-all duration-500" />
+      {allImages.length > 1 && (
+        <>
+          <button
+            onClick={() => setCurrent((current - 1 + allImages.length) % allImages.length)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => setCurrent((current + 1) % allImages.length)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/70 hover:bg-background/90 backdrop-blur-sm rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+            {allImages.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrent(idx)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${idx === current ? "bg-background w-5" : "bg-background/50"}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+      {/* Thumbnails */}
+      {allImages.length > 1 && (
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          {allImages.map((img, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              className={`w-12 h-8 rounded overflow-hidden border-2 transition-all ${idx === current ? "border-background" : "border-transparent opacity-70"}`}
+            >
+              <img src={img} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Chambres = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
+  const [roomTypeImages, setRoomTypeImages] = useState<Record<string, RoomTypeImage[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<RoomType | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
@@ -69,16 +134,25 @@ const Chambres = () => {
   }, []);
 
   const fetchRoomTypes = async () => {
-    const { data, error } = await supabase
-      .from("room_types")
-      .select("*")
-      .order("base_price", { ascending: true });
+    const [typesRes, imagesRes] = await Promise.all([
+      supabase.from("room_types").select("*").order("base_price", { ascending: true }),
+      supabase.from("room_type_images").select("*").order("display_order", { ascending: true }),
+    ]);
 
-    if (error) {
-      toast({ variant: "destructive", title: "Erreur", description: error.message });
+    if (typesRes.error) {
+      toast({ variant: "destructive", title: "Erreur", description: typesRes.error.message });
     } else {
-      setRoomTypes(data || []);
+      setRoomTypes(typesRes.data || []);
     }
+
+    // Group images by room_type_id
+    const grouped: Record<string, RoomTypeImage[]> = {};
+    (imagesRes.data || []).forEach((img: any) => {
+      if (!grouped[img.room_type_id]) grouped[img.room_type_id] = [];
+      grouped[img.room_type_id].push(img);
+    });
+    setRoomTypeImages(grouped);
+
     setIsLoading(false);
   };
 
@@ -201,19 +275,12 @@ const Chambres = () => {
                     key={type.id}
                     className={`grid lg:grid-cols-2 gap-12 lg:gap-20 items-center`}
                   >
-                    {/* Image */}
+                    {/* Image Gallery */}
                     <div className={index % 2 === 1 ? "lg:order-2" : ""}>
-                      {type.image_url ? (
-                        <img
-                          src={type.image_url}
-                          alt={type.name}
-                          className="w-full h-[400px] md:h-[500px] object-cover rounded-lg shadow-2xl"
-                        />
-                      ) : (
-                        <div className="w-full h-[400px] md:h-[500px] bg-secondary rounded-lg shadow-2xl flex items-center justify-center">
-                          <Bed className="w-16 h-16 text-muted-foreground" />
-                        </div>
-                      )}
+                      <ImageGallery
+                        images={roomTypeImages[type.id] || []}
+                        mainImage={type.image_url}
+                      />
                     </div>
 
                     {/* Content */}
