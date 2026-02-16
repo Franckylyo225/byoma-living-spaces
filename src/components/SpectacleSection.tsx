@@ -1,11 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Theater, Music, Calendar, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import spectacle1 from "@/assets/spectacle-1.jpg";
+import spectacle2 from "@/assets/spectacle-2.jpg";
+import spectacle3 from "@/assets/spectacle-3.jpg";
+
+const slides = [spectacle1, spectacle2, spectacle3];
 
 const SpectacleSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -22,6 +28,14 @@ const SpectacleSection = () => {
     }
 
     return () => observer.disconnect();
+  }, []);
+
+  // Auto-advance slides
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const eventTypes = [
@@ -51,15 +65,25 @@ const SpectacleSection = () => {
     <section
       id="spectacle-section"
       ref={sectionRef}
-      className="relative py-24 md:py-32 bg-foreground text-background overflow-hidden"
+      className="relative py-24 md:py-32 text-background overflow-hidden"
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, currentColor 1px, transparent 0)`,
-          backgroundSize: '40px 40px'
-        }} />
-      </div>
+      {/* Background Slideshow */}
+      {slides.map((slide, index) => (
+        <div
+          key={index}
+          className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: currentSlide === index ? 1 : 0 }}
+        >
+          <img
+            src={slide}
+            alt=""
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-foreground/75" />
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Header */}
@@ -80,7 +104,7 @@ const SpectacleSection = () => {
         {/* Event Types Grid */}
         <div className={`grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-16 ${isVisible ? "animate-fade-in-up" : "opacity-0"}`}
              style={{ animationDelay: "200ms" }}>
-          {eventTypes.map((event, index) => (
+          {eventTypes.map((event) => (
             <div
               key={event.title}
               className="text-center p-6 md:p-8 border border-background/10 rounded-lg 
@@ -115,6 +139,19 @@ const SpectacleSection = () => {
             <p className="font-display text-5xl md:text-6xl text-accent mb-2">HD</p>
             <p className="text-background/60 text-sm tracking-widest uppercase">Équipement sonore</p>
           </div>
+        </div>
+
+        {/* Slide indicators */}
+        <div className="flex justify-center gap-2 mb-10">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                currentSlide === idx ? "bg-accent w-6" : "bg-background/40"
+              }`}
+            />
+          ))}
         </div>
 
         {/* CTA */}
