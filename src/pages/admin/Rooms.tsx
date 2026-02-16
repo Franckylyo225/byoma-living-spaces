@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown, ImageIcon, Eye, Users, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -733,8 +733,12 @@ const Rooms = () => {
         </TabsContent>
 
         {/* Types de chambres */}
-        <TabsContent value="types" className="space-y-4">
-          <div className="flex justify-end">
+        <TabsContent value="types" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Configuration des types</h2>
+              <p className="text-sm text-muted-foreground">Gérez les catégories affichées sur le site public</p>
+            </div>
             <Dialog open={isTypeDialogOpen} onOpenChange={setIsTypeDialogOpen}>
               <DialogTrigger asChild>
                 <Button onClick={openNewTypeDialog}>
@@ -742,13 +746,51 @@ const Rooms = () => {
                   Ajouter un type
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-lg">
                 <DialogHeader>
                   <DialogTitle>
                     {editingType ? "Modifier le type" : "Nouveau type de chambre"}
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleTypeSubmit} className="space-y-4">
+                  {/* Image preview in form */}
+                  <div className="space-y-2">
+                    <Label htmlFor="type_image_url">Photo de la chambre</Label>
+                    <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-muted-foreground/25 overflow-hidden bg-muted/30">
+                      {typeFormData.image_url ? (
+                        <>
+                          <img 
+                            src={typeFormData.image_url} 
+                            alt="Aperçu" 
+                            className="w-full h-full object-cover"
+                            onError={(e) => { 
+                              (e.target as HTMLImageElement).style.display = 'none';
+                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="hidden absolute inset-0 flex items-center justify-center bg-muted/50">
+                            <div className="text-center">
+                              <AlertCircle className="h-8 w-8 mx-auto text-destructive mb-2" />
+                              <p className="text-sm text-destructive font-medium">URL invalide</p>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full gap-2">
+                          <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
+                          <p className="text-sm text-muted-foreground">Collez une URL d'image ci-dessous</p>
+                        </div>
+                      )}
+                    </div>
+                    <Input
+                      id="type_image_url"
+                      value={typeFormData.image_url}
+                      onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
+                      placeholder="https://exemple.com/photo.jpg"
+                    />
+                    <p className="text-xs text-muted-foreground">Cette image sera affichée sur la page d'accueil et la page de réservation</p>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="type_name">Nom du type</Label>
                     <Input
@@ -765,6 +807,7 @@ const Rooms = () => {
                       id="type_description"
                       value={typeFormData.description}
                       onChange={(e) => setTypeFormData({ ...typeFormData, description: e.target.value })}
+                      placeholder="Description affichée sur le site..."
                       rows={3}
                     />
                   </div>
@@ -802,23 +845,41 @@ const Rooms = () => {
                       rows={2}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="type_image_url">URL de l'image</Label>
-                    <Input
-                      id="type_image_url"
-                      value={typeFormData.image_url}
-                      onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
-                      placeholder="https://exemple.com/photo.jpg"
-                    />
-                    {typeFormData.image_url && (
-                      <img 
-                        src={typeFormData.image_url} 
-                        alt="Aperçu" 
-                        className="w-full h-32 object-cover rounded-md border"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    )}
-                  </div>
+
+                  {/* Live preview */}
+                  {typeFormData.name && (
+                    <div className="space-y-2 pt-2 border-t">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                        <Eye className="h-4 w-4" />
+                        Aperçu tel qu'affiché sur le site
+                      </div>
+                      <div className="rounded-lg border overflow-hidden bg-background shadow-sm">
+                        <div className="relative h-32 bg-muted">
+                          {typeFormData.image_url ? (
+                            <img src={typeFormData.image_url} alt="" className="w-full h-full object-cover" 
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-4">
+                          <h4 className="font-semibold">{typeFormData.name}</h4>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{typeFormData.description || "Aucune description"}</p>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="text-xs text-muted-foreground flex items-center gap-1">
+                              <Users className="h-3 w-3" /> {typeFormData.capacity} pers.
+                            </span>
+                            <span className="font-semibold text-sm text-accent">
+                              {typeFormData.base_price > 0 ? formatPrice(typeFormData.base_price) + "/nuit" : "—"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <Button type="submit" className="w-full">
                     {editingType ? "Modifier" : "Créer"}
                   </Button>
@@ -841,68 +902,96 @@ const Rooms = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {roomTypes.map((type) => (
-                <Card key={type.id} className="hover:shadow-md transition-shadow overflow-hidden">
-                  {type.image_url && (
-                    <img 
-                      src={type.image_url} 
-                      alt={type.name} 
-                      className="w-full h-40 object-cover"
-                    />
-                  )}
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-accent/10 rounded-lg">
-                          <Bed className="h-5 w-5 text-accent" />
+              {roomTypes.map((type) => {
+                const roomCount = getRoomCountByType(type.id);
+                const amenities = getAmenitiesArray(type.amenities);
+                return (
+                  <Card key={type.id} className="overflow-hidden group hover:shadow-lg transition-all duration-300">
+                    {/* Photo section */}
+                    <div className="relative h-48 bg-muted">
+                      {type.image_url ? (
+                        <img 
+                          src={type.image_url} 
+                          alt={type.name} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center justify-center h-full gap-2 bg-muted/80">
+                          <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
+                          <p className="text-xs text-muted-foreground">Aucune photo</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-xs"
+                            onClick={() => handleEditType(type)}
+                          >
+                            Ajouter une photo
+                          </Button>
                         </div>
+                      )}
+                      {/* Overlay badges */}
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-background/90 text-foreground backdrop-blur-sm">
+                          {roomCount} chambre{roomCount > 1 ? "s" : ""}
+                        </Badge>
+                      </div>
+                      {!type.image_url && (
+                        <div className="absolute top-3 right-3">
+                          <Badge variant="destructive" className="text-xs">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            Photo manquante
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
                         <div>
-                          <CardTitle className="text-lg">{type.name}</CardTitle>
-                          <p className="text-sm text-muted-foreground">
-                            {getRoomCountByType(type.id)} chambre(s)
+                          <CardTitle className="text-xl">{type.name}</CardTitle>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <Users className="h-3.5 w-3.5" />
+                            Jusqu'à {type.capacity} personne{type.capacity > 1 ? "s" : ""}
                           </p>
                         </div>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleEditType(type)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDeleteType(type.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEditType(type)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDeleteType(type.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {type.description || "Aucune description — cliquez sur Modifier pour en ajouter une"}
+                      </p>
+                      {amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {amenities.slice(0, 5).map((amenity, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {amenity}
+                            </Badge>
+                          ))}
+                          {amenities.length > 5 && (
+                            <Badge variant="outline" className="text-xs">
+                              +{amenities.length - 5}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between pt-3 border-t">
+                        <span className="text-2xl font-bold text-accent">
+                          {formatPrice(type.base_price)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">/ nuit</span>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {type.description || "Aucune description"}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {(() => {
-                        const amenities = getAmenitiesArray(type.amenities);
-                        return (
-                          <>
-                            {amenities.slice(0, 4).map((amenity, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {amenity}
-                              </Badge>
-                            ))}
-                            {amenities.length > 4 && (
-                              <Badge variant="outline" className="text-xs">
-                                +{amenities.length - 4}
-                              </Badge>
-                            )}
-                          </>
-                        );
-                      })()}
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <span className="text-sm text-muted-foreground">Capacité: {type.capacity} pers.</span>
-                      <span className="font-semibold text-accent">{formatPrice(type.base_price)}/nuit</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           )}
         </TabsContent>
