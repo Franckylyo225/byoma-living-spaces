@@ -746,142 +746,190 @@ const Rooms = () => {
                   Ajouter un type
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-lg">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>
-                    {editingType ? "Modifier le type" : "Nouveau type de chambre"}
+                  <DialogTitle className="text-xl">
+                    {editingType ? "Modifier le type de chambre" : "Nouveau type de chambre"}
                   </DialogTitle>
                 </DialogHeader>
-                <form onSubmit={handleTypeSubmit} className="space-y-4">
-                  {/* Image preview in form */}
-                  <div className="space-y-2">
-                    <Label htmlFor="type_image_url">Photo de la chambre</Label>
-                    <div className="relative w-full h-48 rounded-lg border-2 border-dashed border-muted-foreground/25 overflow-hidden bg-muted/30">
-                      {typeFormData.image_url ? (
-                        <>
-                          <img 
-                            src={typeFormData.image_url} 
-                            alt="Aperçu" 
-                            className="w-full h-full object-cover"
-                            onError={(e) => { 
-                              (e.target as HTMLImageElement).style.display = 'none';
-                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
-                            }}
+                <form onSubmit={handleTypeSubmit}>
+                  <Tabs defaultValue="info" className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 mb-4">
+                      <TabsTrigger value="info" className="flex items-center gap-2">
+                        <Bed className="h-4 w-4" />
+                        Informations
+                      </TabsTrigger>
+                      <TabsTrigger value="images" className="flex items-center gap-2">
+                        <ImageIcon className="h-4 w-4" />
+                        Images
+                        {!typeFormData.image_url && (
+                          <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 ml-1">!</Badge>
+                        )}
+                      </TabsTrigger>
+                    </TabsList>
+
+                    {/* Onglet Informations */}
+                    <TabsContent value="info" className="space-y-5 mt-0">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                          <Label htmlFor="type_name">Nom du type</Label>
+                          <Input
+                            id="type_name"
+                            value={typeFormData.name}
+                            onChange={(e) => setTypeFormData({ ...typeFormData, name: e.target.value })}
+                            placeholder="Ex: Standard, Premium, Suite..."
+                            required
                           />
-                          <div className="hidden absolute inset-0 flex items-center justify-center bg-muted/50">
-                            <div className="text-center">
-                              <AlertCircle className="h-8 w-8 mx-auto text-destructive mb-2" />
-                              <p className="text-sm text-destructive font-medium">URL invalide</p>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full gap-2">
-                          <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
-                          <p className="text-sm text-muted-foreground">Collez une URL d'image ci-dessous</p>
                         </div>
-                      )}
-                    </div>
-                    <Input
-                      id="type_image_url"
-                      value={typeFormData.image_url}
-                      onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
-                      placeholder="https://exemple.com/photo.jpg"
-                    />
-                    <p className="text-xs text-muted-foreground">Cette image sera affichée sur la page d'accueil et la page de réservation</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="type_name">Nom du type</Label>
-                    <Input
-                      id="type_name"
-                      value={typeFormData.name}
-                      onChange={(e) => setTypeFormData({ ...typeFormData, name: e.target.value })}
-                      placeholder="Ex: Standard, Premium, Suite..."
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="type_description">Description</Label>
-                    <Textarea
-                      id="type_description"
-                      value={typeFormData.description}
-                      onChange={(e) => setTypeFormData({ ...typeFormData, description: e.target.value })}
-                      placeholder="Description affichée sur le site..."
-                      rows={3}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="type_capacity">Capacité (pers.)</Label>
-                      <Input
-                        id="type_capacity"
-                        type="number"
-                        min="1"
-                        value={typeFormData.capacity}
-                        onChange={(e) => setTypeFormData({ ...typeFormData, capacity: parseInt(e.target.value) })}
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="type_price">Prix/nuit (FCFA)</Label>
-                      <Input
-                        id="type_price"
-                        type="number"
-                        min="0"
-                        value={typeFormData.base_price}
-                        onChange={(e) => setTypeFormData({ ...typeFormData, base_price: parseInt(e.target.value) })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="type_amenities">Équipements (séparés par virgules)</Label>
-                    <Textarea
-                      id="type_amenities"
-                      value={typeFormData.amenities}
-                      onChange={(e) => setTypeFormData({ ...typeFormData, amenities: e.target.value })}
-                      placeholder="WiFi, Climatisation, TV, Mini-bar..."
-                      rows={2}
-                    />
-                  </div>
-
-                  {/* Live preview */}
-                  {typeFormData.name && (
-                    <div className="space-y-2 pt-2 border-t">
-                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                        <Eye className="h-4 w-4" />
-                        Aperçu tel qu'affiché sur le site
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="type_capacity">Capacité</Label>
+                            <Input
+                              id="type_capacity"
+                              type="number"
+                              min="1"
+                              value={typeFormData.capacity}
+                              onChange={(e) => setTypeFormData({ ...typeFormData, capacity: parseInt(e.target.value) })}
+                              required
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="type_price">Prix/nuit (FCFA)</Label>
+                            <Input
+                              id="type_price"
+                              type="number"
+                              min="0"
+                              value={typeFormData.base_price}
+                              onChange={(e) => setTypeFormData({ ...typeFormData, base_price: parseInt(e.target.value) })}
+                              required
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div className="rounded-lg border overflow-hidden bg-background shadow-sm">
-                        <div className="relative h-32 bg-muted">
+
+                      <div className="space-y-2">
+                        <Label htmlFor="type_description">Description</Label>
+                        <Textarea
+                          id="type_description"
+                          value={typeFormData.description}
+                          onChange={(e) => setTypeFormData({ ...typeFormData, description: e.target.value })}
+                          placeholder="Description affichée sur le site public..."
+                          rows={4}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="type_amenities">Équipements (séparés par virgules)</Label>
+                        <Textarea
+                          id="type_amenities"
+                          value={typeFormData.amenities}
+                          onChange={(e) => setTypeFormData({ ...typeFormData, amenities: e.target.value })}
+                          placeholder="WiFi, Climatisation, TV écran plat, Mini-bar, Coffre-fort..."
+                          rows={3}
+                        />
+                        {typeFormData.amenities && (
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {typeFormData.amenities.split(",").map((a, i) => a.trim()).filter(Boolean).map((amenity, i) => (
+                              <Badge key={i} variant="secondary" className="text-xs">{amenity}</Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </TabsContent>
+
+                    {/* Onglet Images */}
+                    <TabsContent value="images" className="space-y-5 mt-0">
+                      <div className="space-y-3">
+                        <Label>Photo principale</Label>
+                        <div className="relative w-full h-56 rounded-lg border-2 border-dashed border-muted-foreground/25 overflow-hidden bg-muted/30">
                           {typeFormData.image_url ? (
-                            <img src={typeFormData.image_url} alt="" className="w-full h-full object-cover" 
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                            <>
+                              <img 
+                                src={typeFormData.image_url} 
+                                alt="Aperçu" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => { 
+                                  (e.target as HTMLImageElement).style.display = 'none';
+                                  (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                                }}
+                              />
+                              <div className="hidden absolute inset-0 flex items-center justify-center bg-muted/50">
+                                <div className="text-center">
+                                  <AlertCircle className="h-8 w-8 mx-auto text-destructive mb-2" />
+                                  <p className="text-sm text-destructive font-medium">URL invalide</p>
+                                </div>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-3 right-3 h-8"
+                                onClick={() => setTypeFormData({ ...typeFormData, image_url: "" })}
+                              >
+                                <Trash2 className="h-3.5 w-3.5 mr-1" />
+                                Retirer
+                              </Button>
+                            </>
                           ) : (
-                            <div className="flex items-center justify-center h-full">
-                              <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
+                            <div className="flex flex-col items-center justify-center h-full gap-3">
+                              <ImageIcon className="h-12 w-12 text-muted-foreground/40" />
+                              <div className="text-center">
+                                <p className="text-sm font-medium text-muted-foreground">Aucune photo</p>
+                                <p className="text-xs text-muted-foreground/70 mt-1">Collez une URL d'image ci-dessous</p>
+                              </div>
                             </div>
                           )}
                         </div>
-                        <div className="p-4">
-                          <h4 className="font-semibold">{typeFormData.name}</h4>
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{typeFormData.description || "Aucune description"}</p>
-                          <div className="flex items-center justify-between mt-3">
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Users className="h-3 w-3" /> {typeFormData.capacity} pers.
-                            </span>
-                            <span className="font-semibold text-sm text-accent">
-                              {typeFormData.base_price > 0 ? formatPrice(typeFormData.base_price) + "/nuit" : "—"}
-                            </span>
+                        <Input
+                          id="type_image_url"
+                          value={typeFormData.image_url}
+                          onChange={(e) => setTypeFormData({ ...typeFormData, image_url: e.target.value })}
+                          placeholder="https://exemple.com/photo-chambre.jpg"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Cette image sera affichée sur la page d'accueil et la page de réservation.
+                          Utilisez une image de bonne qualité (min. 800×600px).
+                        </p>
+                      </div>
+
+                      {/* Live preview */}
+                      {typeFormData.name && (
+                        <div className="space-y-3 pt-4 border-t">
+                          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                            <Eye className="h-4 w-4" />
+                            Aperçu tel qu'affiché sur le site
+                          </div>
+                          <div className="rounded-lg border overflow-hidden bg-background shadow-sm max-w-sm mx-auto">
+                            <div className="relative h-40 bg-muted">
+                              {typeFormData.image_url ? (
+                                <img src={typeFormData.image_url} alt="" className="w-full h-full object-cover" 
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              ) : (
+                                <div className="flex items-center justify-center h-full">
+                                  <ImageIcon className="h-8 w-8 text-muted-foreground/30" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-4">
+                              <h4 className="font-semibold">{typeFormData.name}</h4>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{typeFormData.description || "Aucune description"}</p>
+                              <div className="flex items-center justify-between mt-3">
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Users className="h-3 w-3" /> {typeFormData.capacity} pers.
+                                </span>
+                                <span className="font-semibold text-sm text-accent">
+                                  {typeFormData.base_price > 0 ? formatPrice(typeFormData.base_price) + "/nuit" : "—"}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
+                      )}
+                    </TabsContent>
+                  </Tabs>
 
-                  <Button type="submit" className="w-full">
-                    {editingType ? "Modifier" : "Créer"}
+                  <Button type="submit" className="w-full mt-6">
+                    {editingType ? "Enregistrer les modifications" : "Créer le type"}
                   </Button>
                 </form>
               </DialogContent>
