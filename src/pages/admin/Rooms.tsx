@@ -976,7 +976,7 @@ const Rooms = () => {
                                 <p className="text-sm text-muted-foreground">Aucune photo ajoutée</p>
                               </div>
                             ) : (
-                              <div className="grid grid-cols-3 gap-2 max-h-[240px] overflow-y-auto pr-1">
+                              <div className="grid grid-cols-4 gap-1.5 max-h-[200px] overflow-y-auto pr-1">
                                 {typeImages.map((img, idx) => (
                                   <div key={img.id} className="relative group rounded-lg overflow-hidden border bg-muted aspect-[4/3]">
                                     <img 
