@@ -27,6 +27,9 @@ import residenceLounge from "@/assets/residence-lounge.jpg";
 import heroApropos from "@/assets/hero-apropos.jpg";
 import suiteImage from "@/assets/residence-suite.jpg";
 import terraceImage from "@/assets/residence-terrace.jpg";
+import aproposRestaurant from "@/assets/apropos-restaurant.jpg";
+import aproposConference from "@/assets/apropos-conference.jpg";
+import aproposReunion from "@/assets/apropos-reunion.jpg";
 import logoSignature from "@/assets/logo-signature.png";
 
 const hotelServices = [
@@ -252,18 +255,18 @@ const APropos = () => {
             {/* Images Grid */}
             <div className="grid grid-cols-2 gap-4">
               <img 
-                src={suiteImage} 
-                alt="Suite BYOMA" 
+                src={aproposRestaurant} 
+                alt="Restaurant & Bar BYOMA" 
                 className="w-full h-64 object-cover rounded-lg shadow-lg col-span-2"
               />
               <img 
-                src={terraceImage} 
-                alt="Terrasse BYOMA" 
+                src={aproposConference} 
+                alt="Salle de conférence BYOMA" 
                 className="w-full h-48 object-cover rounded-lg shadow-lg"
               />
               <img 
-                src={residenceLounge} 
-                alt="Lounge BYOMA" 
+                src={aproposReunion} 
+                alt="Salle de réunion BYOMA" 
                 className="w-full h-48 object-cover rounded-lg shadow-lg"
               />
             </div>
