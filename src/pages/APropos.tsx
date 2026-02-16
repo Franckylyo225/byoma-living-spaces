@@ -30,6 +30,7 @@ import terraceImage from "@/assets/residence-terrace.jpg";
 import aproposRestaurant from "@/assets/apropos-restaurant.jpg";
 import aproposConference from "@/assets/apropos-conference.jpg";
 import aproposReunion from "@/assets/apropos-reunion.jpg";
+import aproposAccueil from "@/assets/apropos-accueil.jpg";
 import logoSignature from "@/assets/logo-signature.png";
 
 const hotelServices = [
@@ -268,6 +269,11 @@ const APropos = () => {
                 src={aproposReunion} 
                 alt="Salle de réunion BYOMA" 
                 className="w-full h-48 object-cover rounded-lg shadow-lg"
+              />
+              <img 
+                src={aproposAccueil} 
+                alt="Accueil BYOMA" 
+                className="w-full h-48 object-cover rounded-lg shadow-lg col-span-2"
               />
             </div>
           </div>
