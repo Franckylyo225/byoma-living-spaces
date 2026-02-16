@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown, CalendarIcon, Minus, Plus } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ import heroSlide3 from "@/assets/hero-slide-3.jpg";
 const slides = [heroSlide1, heroSlide2, heroSlide3];
 
 const Hero = () => {
+  const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [adults, setAdults] = useState(0);
@@ -33,7 +35,12 @@ const Hero = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ dateRange, adults, children });
+    const params = new URLSearchParams();
+    if (dateRange?.from) params.set("checkin", format(dateRange.from, "yyyy-MM-dd"));
+    if (dateRange?.to) params.set("checkout", format(dateRange.to, "yyyy-MM-dd"));
+    const totalGuests = adults + children;
+    if (totalGuests > 0) params.set("guests", totalGuests.toString());
+    navigate(`/chambres?${params.toString()}`);
   };
 
   const incrementAdults = () => setAdults((prev) => prev + 1);
