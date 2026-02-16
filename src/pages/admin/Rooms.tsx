@@ -73,6 +73,7 @@ const Rooms = () => {
   const [typeImages, setTypeImages] = useState<RoomTypeImage[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -372,6 +373,25 @@ const Rooms = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
     toast({ title: "Upload terminé" });
     fetchData();
+  };
+
+  const handleReorderImages = async (fromIdx: number, toIdx: number) => {
+    if (fromIdx === toIdx) return;
+    const reordered = [...typeImages];
+    const [moved] = reordered.splice(fromIdx, 1);
+    reordered.splice(toIdx, 0, moved);
+    setTypeImages(reordered);
+
+    // Persist new order
+    const updates = reordered.map((img, i) =>
+      supabase.from("room_type_images").update({ display_order: i }).eq("id", img.id)
+    );
+    await Promise.all(updates);
+
+    // Update main image if first changed
+    if (editingType && reordered[0]) {
+      await supabase.from("room_types").update({ image_url: reordered[0].image_url }).eq("id", editingType.id);
+    }
   };
 
   const handleDeleteImage = async (imageId: string) => {
@@ -974,13 +994,39 @@ const Rooms = () => {
                               {Array.from({ length: 10 }).map((_, idx) => {
                                 const img = typeImages[idx];
                                 return (
-                                  <div key={idx} className="relative group rounded-lg overflow-hidden border bg-muted aspect-square">
+                                  <div
+                                    key={idx}
+                                    className={`relative group rounded-lg overflow-hidden border bg-muted aspect-square transition-all ${
+                                      img ? "cursor-grab active:cursor-grabbing" : ""
+                                    } ${dragIdx !== null && idx < typeImages.length && dragIdx !== idx ? "ring-2 ring-accent/40" : ""} ${
+                                      dragIdx === idx ? "opacity-40 scale-95" : ""
+                                    }`}
+                                    draggable={!!img}
+                                    onDragStart={(e) => {
+                                      if (!img) { e.preventDefault(); return; }
+                                      setDragIdx(idx);
+                                      e.dataTransfer.effectAllowed = "move";
+                                    }}
+                                    onDragOver={(e) => {
+                                      if (dragIdx === null || idx >= typeImages.length) return;
+                                      e.preventDefault();
+                                      e.dataTransfer.dropEffect = "move";
+                                    }}
+                                    onDrop={(e) => {
+                                      e.preventDefault();
+                                      if (dragIdx !== null && idx < typeImages.length) {
+                                        handleReorderImages(dragIdx, idx);
+                                      }
+                                      setDragIdx(null);
+                                    }}
+                                    onDragEnd={() => setDragIdx(null)}
+                                  >
                                     {img ? (
                                       <>
                                         <img 
                                           src={img.image_url} 
                                           alt={`Photo ${idx + 1}`} 
-                                          className="w-full h-full object-cover"
+                                          className="w-full h-full object-cover pointer-events-none"
                                           onError={(e) => { (e.target as HTMLImageElement).src = ''; }}
                                         />
                                         {idx === 0 && (
