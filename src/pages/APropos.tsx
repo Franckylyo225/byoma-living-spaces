@@ -199,6 +199,12 @@ const APropos = () => {
                   unique et personnalisée.
                 </p>
               </div>
+              
+              <div className="mt-10 pt-8 border-t border-border">
+                <p className="font-display text-xl italic text-foreground">
+                  L'équipe BYOMA
+                </p>
+              </div>
             </div>
           </div>
         </div>
