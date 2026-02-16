@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown, ImageIcon, Eye, Users, AlertCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Bed, DoorOpen, Settings, Filter, X, LayoutGrid, List, ArrowUpDown, ArrowUp, ArrowDown, ImageIcon, Eye, Users, AlertCircle, Upload, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -72,6 +72,8 @@ const Rooms = () => {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [typeImages, setTypeImages] = useState<RoomTypeImage[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const [roomFormData, setRoomFormData] = useState({
@@ -317,6 +319,59 @@ const Rooms = () => {
       }
       toast({ title: "Image ajoutée" });
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || !editingType) return;
+    setIsUploading(true);
+
+    for (const file of Array.from(files)) {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const fileName = `${editingType.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("room-images")
+        .upload(fileName, file, { contentType: file.type });
+
+      if (uploadError) {
+        toast({ variant: "destructive", title: "Erreur d'upload", description: uploadError.message });
+        continue;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("room-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData.publicUrl;
+      const maxOrder = typeImages.length > 0 ? Math.max(...typeImages.map(i => i.display_order)) + 1 : 0;
+
+      const { data, error } = await supabase
+        .from("room_type_images")
+        .insert({
+          room_type_id: editingType.id,
+          image_url: publicUrl,
+          display_order: maxOrder + Array.from(files).indexOf(file),
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast({ variant: "destructive", title: "Erreur", description: error.message });
+      } else if (data) {
+        setTypeImages(prev => [...prev, data]);
+        // Set as main image if first one
+        if (typeImages.length === 0 && Array.from(files).indexOf(file) === 0) {
+          await supabase.from("room_types").update({ image_url: publicUrl }).eq("id", editingType.id);
+          setTypeFormData(prev => ({ ...prev, image_url: publicUrl }));
+        }
+      }
+    }
+
+    setIsUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    toast({ title: "Upload terminé" });
+    fetchData();
   };
 
   const handleDeleteImage = async (imageId: string) => {
@@ -953,9 +1008,50 @@ const Rooms = () => {
                             )}
                           </div>
 
-                          {/* Ajouter une image */}
-                          <div className="space-y-2 pt-3 border-t">
-                            <Label>Ajouter une photo</Label>
+                          {/* Ajouter des images */}
+                          <div className="space-y-3 pt-3 border-t">
+                            <Label>Ajouter des photos</Label>
+                            
+                            {/* Upload button */}
+                            <div className="flex gap-2">
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={handleFileUpload}
+                                className="hidden"
+                              />
+                              <Button
+                                type="button"
+                                variant="default"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isUploading}
+                                className="flex-1"
+                              >
+                                {isUploading ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    Upload en cours...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="h-4 w-4 mr-2" />
+                                    Uploader des photos
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+
+                            {/* Or paste URL */}
+                            <div className="relative">
+                              <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                              </div>
+                              <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-background px-2 text-muted-foreground">ou coller une URL</span>
+                              </div>
+                            </div>
                             <div className="flex gap-2">
                               <Input
                                 value={newImageUrl}
@@ -975,7 +1071,7 @@ const Rooms = () => {
                             </div>
                             <p className="text-xs text-muted-foreground">
                               La première image sera utilisée comme photo principale sur le site.
-                              Ajoutez plusieurs photos pour montrer la chambre sous tous les angles.
+                              Vous pouvez sélectionner plusieurs fichiers à la fois.
                             </p>
                           </div>
 
